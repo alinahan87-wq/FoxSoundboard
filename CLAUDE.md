@@ -1,7 +1,7 @@
 # Fox's Games
 
 A toddler games app (PWA) for an Android tablet, for an autistic toddler. Plain HTML/CSS/JS with no
-build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `numbers.js`, `scratch.js`, `circuit.js`, `app.js`, `sw.js`.
+build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `numbers.js`, `scratch.js`, `bounce.js`, `circuit.js`, `app.js`, `sw.js`.
 
 ## Adding a new game (mode)
 
@@ -19,6 +19,7 @@ Every game must follow this pattern:
 5. **Circuit:** games take `start({ onDone })`. When `onDone` is set, a win (always ending with the
    `Celebrate` bubbles) calls `onDone()` instead of starting a new round. Add the game to `STEPS` in
    `circuit.js`, and add `circuit` to its settings section's `data-mode` (e.g. `data-mode="numbers circuit"`).
+   Free-play toys with no goal (like Bouncy ball) stay out of the circuit.
 6. **Game-specific settings** go in their own `<section data-mode="<name>">` in the settings dialog
    (`#settings`, opened by holding ⚙️),
    so they only appear while that game is selected. Settings shared by every game go under

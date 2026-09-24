@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, Circuit */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, Circuit */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -9,6 +9,7 @@ const DEFAULTS = {
   mode: 'soundboard', volume: 0.8, overlap: false, animate: true, shuffle: true,
   numbersRestart: false, numbersHint: true,
   scratchSpeak: true, scratchBrush: 'bigger',
+  bounceFloaty: false, bounceHum: true,
 };
 
 function loadSettings() {
@@ -290,6 +291,7 @@ const GAMES = {
   fox: FoxGame,
   numbers: NumbersGame,
   scratch: ScratchGame,
+  bounce: BounceGame,
   circuit: Circuit,
 };
 
@@ -347,6 +349,8 @@ const modeInputs = document.querySelectorAll('input[name="mode"]');
 const numbersRestartInput = document.getElementById('numbers-restart');
 const numbersHintInput = document.getElementById('numbers-hint');
 const scratchSpeakInput = document.getElementById('scratch-speak');
+const bounceFloatyInput = document.getElementById('bounce-floaty');
+const bounceHumInput = document.getElementById('bounce-hum');
 const scratchBrushInput = document.getElementById('scratch-brush');
 const voiceTestButton = document.getElementById('voice-test');
 const voiceStatus = document.getElementById('voice-status');
@@ -375,6 +379,14 @@ modeInputs.forEach((input) => input.addEventListener('click', () => {
 }));
 numbersRestartInput.addEventListener('change', () => {
   settings.numbersRestart = numbersRestartInput.checked;
+  saveSettings();
+});
+bounceFloatyInput.addEventListener('change', () => {
+  settings.bounceFloaty = bounceFloatyInput.checked;
+  saveSettings();
+});
+bounceHumInput.addEventListener('change', () => {
+  settings.bounceHum = bounceHumInput.checked;
   saveSettings();
 });
 scratchSpeakInput.addEventListener('change', () => {
@@ -413,6 +425,8 @@ function openSettings() {
   numbersRestartInput.checked = settings.numbersRestart;
   numbersHintInput.checked = settings.numbersHint;
   scratchSpeakInput.checked = settings.scratchSpeak;
+  bounceFloatyInput.checked = settings.bounceFloaty;
+  bounceHumInput.checked = settings.bounceHum;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';
   renderSoundList();

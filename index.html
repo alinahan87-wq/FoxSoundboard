@@ -28,6 +28,9 @@
     </div>
     <div class="animal-name" aria-live="polite"></div>
   </main>
+  <main id="bounce-game" data-mode="bounce" aria-label="Bouncy ball" hidden>
+    <canvas aria-label="Tap or hold to bounce the ball"></canvas>
+  </main>
   <div id="bubbles" aria-hidden="true"></div>
 
   <!-- Grown-up gates: each must be held down for 2 seconds, so little fingers can't open them by accident.
@@ -97,6 +100,12 @@
           <b>Scratch &amp; reveal</b>
           <small>Scratch away the pattern to find an animal</small>
         </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="bounce">
+          <span class="mode-art" aria-hidden="true">⚽</span>
+          <b>Bouncy ball</b>
+          <small>Tap to bounce, hold to power up (not in Circuit)</small>
+        </label>
       </div>
       </div>
     </form>
@@ -114,6 +123,18 @@
         <span>Volume</span>
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
+
+      <section data-mode="bounce">
+        <h2>Bouncy ball</h2>
+        <label class="row">
+          <span>Floaty, slower bounces</span>
+          <input id="bounce-floaty" type="checkbox">
+        </label>
+        <label class="row">
+          <span>Humming sound while powering up</span>
+          <input id="bounce-hum" type="checkbox">
+        </label>
+      </section>
 
       <section data-mode="scratch circuit">
         <h2>Scratch &amp; reveal</h2>
@@ -188,6 +209,7 @@
   <script src="fox.js"></script>
   <script src="numbers.js"></script>
   <script src="scratch.js"></script>
+  <script src="bounce.js"></script>
   <script src="circuit.js"></script>
   <script src="app.js"></script>
 </body>

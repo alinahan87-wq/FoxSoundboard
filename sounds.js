@@ -141,6 +141,15 @@ const EFFECTS = {
   },
   // a soft scratchy "shh" while scratching
   scratch: (ctx, out) => noiseSweep(ctx, out, { dur: 0.09, from: 3000, to: 1800, gain: 0.07 }),
+  // bouncy ball: a "boing" that's louder for harder hits and deeper for a bigger ball
+  boing: (ctx, out, strength, sizeFactor = 1) => {
+    const f = 140 + 260 * sizeFactor;
+    return tone(ctx, out, { freq: f * 0.7, dur: 0.16 + 0.22 * strength, type: 'sine', gain: 0.12 + 0.38 * strength, slideTo: f * 1.5 });
+  },
+  // a quick twinkle for the biggest bounces
+  sparkle: (ctx, out) => {
+    [N.E6, N.G6, N.C7].forEach((f, i) => tone(ctx, out, { freq: f, start: 0.05 + i * 0.06, dur: 0.2, type: 'sine', gain: 0.18 }));
+  },
   // bubble pop
   pop: (ctx, out) => tone(ctx, out, { freq: 700 + Math.random() * 500, dur: 0.08, type: 'sine', gain: 0.4, slideTo: 1800 }),
 };
