@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, BlocksGame, Circuit */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, BlocksGame, StretchGame, Circuit */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -11,6 +11,7 @@ const DEFAULTS = {
   scratchSpeak: true, scratchBrush: 'bigger',
   bounceFloaty: false, bounceHum: true,
   blocksRecolour: true,
+  stretchShape: 'random', stretchSound: true,
 };
 
 function loadSettings() {
@@ -294,6 +295,7 @@ const GAMES = {
   scratch: ScratchGame,
   bounce: BounceGame,
   blocks: BlocksGame,
+  stretch: StretchGame,
   circuit: Circuit,
 };
 
@@ -353,6 +355,8 @@ const numbersHintInput = document.getElementById('numbers-hint');
 const scratchSpeakInput = document.getElementById('scratch-speak');
 const bounceFloatyInput = document.getElementById('bounce-floaty');
 const blocksRecolourInput = document.getElementById('blocks-recolour');
+const stretchShapeInput = document.getElementById('stretch-shape');
+const stretchSoundInput = document.getElementById('stretch-sound');
 const bounceHumInput = document.getElementById('bounce-hum');
 const scratchBrushInput = document.getElementById('scratch-brush');
 const voiceTestButton = document.getElementById('voice-test');
@@ -383,6 +387,19 @@ modeInputs.forEach((input) => input.addEventListener('click', () => {
 numbersRestartInput.addEventListener('change', () => {
   settings.numbersRestart = numbersRestartInput.checked;
   saveSettings();
+});
+stretchShapeInput.addEventListener('change', () => {
+  settings.stretchShape = stretchShapeInput.value;
+  saveSettings();
+  StretchGame.reset();
+});
+stretchSoundInput.addEventListener('change', () => {
+  settings.stretchSound = stretchSoundInput.checked;
+  saveSettings();
+});
+document.getElementById('stretch-reset').addEventListener('click', () => {
+  dialog.close();
+  StretchGame.reset();
 });
 blocksRecolourInput.addEventListener('change', () => {
   settings.blocksRecolour = blocksRecolourInput.checked;
@@ -438,6 +455,8 @@ function openSettings() {
   scratchSpeakInput.checked = settings.scratchSpeak;
   bounceFloatyInput.checked = settings.bounceFloaty;
   blocksRecolourInput.checked = settings.blocksRecolour;
+  stretchShapeInput.value = settings.stretchShape;
+  stretchSoundInput.checked = settings.stretchSound;
   bounceHumInput.checked = settings.bounceHum;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';

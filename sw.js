@@ -1,6 +1,6 @@
 // Caches the app so it opens instantly and works with no internet.
 // Bump VERSION whenever any of the files below change.
-const VERSION = 'v19';
+const VERSION = 'v20';
 const FILES = [
   './',
   'index.html',
@@ -14,6 +14,7 @@ const FILES = [
   'bounce.js',
   'vendor/matter.min.js',
   'blocks.js',
+  'stretch.js',
   'circuit.js',
   'app.js',
   'manifest.webmanifest',
