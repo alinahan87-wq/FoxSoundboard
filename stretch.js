@@ -234,7 +234,7 @@ const StretchGame = (() => {
     if (!gr) return;
     const p = point(e);
     // Moving it around slowly shifts the colour through the rainbow.
-    if (settings.stretchColour) hsl.h = (hsl.h + Math.hypot(p.x - gr.x, p.y - gr.y) * 0.15) % 360;
+    if (settings.stretchColour) hsl.h = (hsl.h + Math.hypot(p.x - gr.x, p.y - gr.y) * 0.04) % 360;
     gr.x = p.x;
     gr.y = p.y;
   });
