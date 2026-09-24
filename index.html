@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#58cc02">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Fox Soundboard</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="board" aria-label="Sound buttons"></main>
+
+  <!-- Grown-up gate: must be held down for 2 seconds, so little fingers can't open it by accident -->
+  <button id="parent-gate" aria-label="Hold for grown-up settings">
+    <svg viewBox="0 0 36 36" aria-hidden="true">
+      <circle class="ring-bg" cx="18" cy="18" r="16"/>
+      <circle class="ring" cx="18" cy="18" r="16"/>
+    </svg>
+    <span aria-hidden="true">⚙️</span>
+  </button>
+
+  <dialog id="settings">
+    <form method="dialog" class="settings-inner">
+      <header>
+        <h1>Grown-up settings</h1>
+        <button class="close" value="close" aria-label="Close">✕</button>
+      </header>
+
+      <label class="row">
+        <span>Volume</span>
+        <input id="volume" type="range" min="0" max="1" step="0.05">
+      </label>
+
+      <label class="row">
+        <span>Let sounds overlap when buttons are mashed</span>
+        <input id="overlap" type="checkbox">
+      </label>
+
+      <label class="row">
+        <span>Bounce animation on tap</span>
+        <input id="animate" type="checkbox">
+      </label>
+
+      <h2>Sounds</h2>
+      <p class="hint">
+        Every button has a built-in sound to start with. Tap <b>Choose file</b> to swap in your own
+        (an MP3, M4A, WAV, or even a screen recording saved on this tablet; silence at the start and end is trimmed automatically). Sounds stay on this tablet and work offline.
+      </p>
+      <ul id="sound-list"></ul>
+
+      <p class="hint small">
+        Tip: pin the app so little hands can't swipe out of it. In Android Settings, go to Security → App pinning
+        (or "Pin windows"), then pin this app from the Recents screen.
+      </p>
+    </form>
+  </dialog>
+
+  <input id="file-input" type="file" accept="audio/*,video/mp4,video/*" hidden>
+
+  <script src="sounds.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

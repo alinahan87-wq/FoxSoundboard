@@ -1,0 +1,66 @@
+# 🦊 Fox Soundboard
+
+A simple, toddler-proof soundboard for an Android tablet: eight big, bright buttons
+that each play a fun sound. It's styled after the Duolingo "correct!", "lesson complete",
+"streak" and similar sounds.
+
+It's a web app (PWA). You install it from Chrome onto the home screen, it opens
+full-screen like a normal app, and it works with no internet.
+
+## Toddler-friendly by design
+
+- **Big buttons, no words.** Just colours and pictures. Sound plays the instant a finger lands.
+- **Same layout every time.** Nothing moves around, no pop-ups, no ads, no menus.
+- **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
+  A built-in limiter stops piled-up sounds from getting too loud.
+- **No accidental exits.** No long-press menus, no zooming, no scrolling. The screen stays awake.
+- **Grown-up gate.** Settings open only by *holding* the faint ⚙️ in the bottom-right
+  corner for 2 seconds.
+- **Gentle sounds.** The "oops" sound is a soft bwoop, not a harsh buzzer.
+
+## Putting it on the tablet
+
+1. **Publish it (one-time):** in this GitHub repo go to **Settings → Pages**, and under
+   *Build and deployment* set **Source** to **GitHub Actions**. Then merge this branch
+   into `main`. The included workflow publishes the app to
+   `https://<your-username>.github.io/FoxSoundboard/`.
+2. On the tablet, open that link in **Chrome**.
+3. Tap **⋮ → Add to Home screen → Install**.
+4. Open it from the new home-screen icon. It runs full-screen.
+
+**Recommended:** turn on **App pinning** (Settings → Security and privacy → More security
+settings → Pin app) so he can't swipe out of it. Open the app, go to Recents, tap the app's
+icon and choose **Pin this app**. To unpin, hold Back + Recents.
+
+## Getting the real Duolingo sounds
+
+The app ships with built-in sounds in the same spirit. Duolingo's own sound effects belong
+to Duolingo, so they aren't bundled here, but you can load them yourself for personal use:
+
+1. On the tablet (or a phone), swipe down and start **Screen recorder**, with
+   **Sound → Media sounds** selected.
+2. Open Duolingo and do a lesson (or just a few questions) to trigger the sounds you want.
+3. Stop recording. Trim the video in Gallery (Edit ✂️) to roughly one sound per clip.
+   It doesn't have to be exact.
+4. In the soundboard, hold ⚙️ for 2 seconds, tap **Choose file** next to a button, and pick
+   the clip. MP3/M4A/WAV and MP4 screen recordings all work, and silence at the start and
+   end is trimmed automatically.
+
+Sounds are saved on the tablet itself and keep working offline. **Reset** puts the
+built-in sound back.
+
+## Files
+
+| File | What it is |
+| --- | --- |
+| `index.html` | Page layout and the settings dialog |
+| `style.css` | Look and feel (landscape 4×2 grid, portrait 2×4) |
+| `sounds.js` | The 8 buttons (label, emoji, colour) and their built-in synthesised sounds |
+| `app.js` | Audio playback, custom-sound storage, grown-up gate, settings |
+| `sw.js` | Offline cache. **Bump `VERSION`** when you change any file |
+| `manifest.webmanifest`, `icons/` | What makes it installable as an app |
+
+To try it on a computer, run `python3 -m http.server` in this folder and open
+http://localhost:8000.
+
+To change a button's picture or colour, edit the `BUTTONS` list in `sounds.js`.
