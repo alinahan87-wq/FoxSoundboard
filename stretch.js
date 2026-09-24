@@ -3,10 +3,10 @@
 'use strict';
 
 // Stretchy shape: one big shape with a thick outline and a coloured fill. The
-// shape stays put, but its outline is rubbery: grab near the edge and pull to
-// stretch it, let go and it wobbles back. Parts of the outline push each
-// other away instead of overlapping, so the outline never crosses itself.
-// Tapping inside the shape gives it a jiggle. No goal, just play.
+// shape stays put, but its outline is like soft dough: grab near the edge and
+// pull to stretch it, and when you let go it keeps its new shape. Parts of the
+// outline push each other away instead of overlapping, so the outline never
+// crosses itself. Tapping inside the shape gives it a jiggle. No goal, just play.
 
 const StretchGame = (() => {
   // The outline is a ring of "spokes" coming out of a fixed centre: each spoke
@@ -31,7 +31,8 @@ const StretchGame = (() => {
   let cx = 0;
   let cy = 0;
   let angles = [];  // direction of each spoke
-  let home = [];    // resting length of each spoke
+  let base = [];    // each spoke's length in the original shape
+  let home = [];    // where each spoke rests now: it keeps whatever shape it was pulled into
   let r = [];       // current length
   let v = [];       // how fast each spoke is growing or shrinking
   let shape = 'circle';
@@ -108,7 +109,8 @@ const StretchGame = (() => {
   function fitHome() {
     const poly = polygonFor(shape);
     angles = Array.from({ length: N }, (_, i) => (i / N) * TAU);
-    home = angles.map((a) => rayLength(poly, a));
+    base = angles.map((a) => rayLength(poly, a));
+    home = [...base];
   }
 
   function newShape() {
@@ -167,7 +169,10 @@ const StretchGame = (() => {
     for (let i = 0; i < N; i++) {
       const prev = r[(i + N - 1) % N];
       const nxt = r[(i + 1) % N];
-      let a = (home[i] - r[i]) * SPRING + ((prev + nxt) / 2 - r[i]) * SMOOTH;
+      // Spring towards the resting shape, and smooth out only the bumps that
+      // aren't part of it, so a shape that's been pulled into place stays put.
+      const restBend = (home[(i + N - 1) % N] + home[(i + 1) % N]) / 2 - home[i];
+      let a = (home[i] - r[i]) * SPRING + ((prev + nxt) / 2 - r[i] - restBend) * SMOOTH;
       v[i] = (v[i] + a) * DAMPING;
       let len = r[i] + v[i];
       if (weight[i] > 0) {
@@ -177,7 +182,7 @@ const StretchGame = (() => {
         len += (target - len) * pull;
         v[i] *= 1 - pull;
       }
-      const lo = home[i] * MIN_R;
+      const lo = base[i] * MIN_R;
       const hi = maxLength(angles[i]);
       if (len < lo) {
         len = lo;
@@ -235,6 +240,8 @@ const StretchGame = (() => {
     if (!gr) return;
     grabs.delete(e.pointerId);
     const s = stretchOf(gr);
+    // Keep the new shape: wherever the outline is now becomes where it rests.
+    home = [...r];
     if (!grabs.size) stopHum();
     if (s > 0.1) EFFECTS.boing(audio(), master, s * 0.6, 1.2);
   }
@@ -323,14 +330,6 @@ const StretchGame = (() => {
     g.strokeStyle = darker(colour, 35);
     g.stroke();
 
-    // soft shine near the top-left of the resting shape
-    g.save();
-    g.globalAlpha = 0.25;
-    g.fillStyle = '#fff';
-    g.beginPath();
-    g.ellipse(cx - Math.min(W, H) * 0.1, cy - Math.min(W, H) * 0.12, Math.min(W, H) * 0.07, Math.min(W, H) * 0.035, -0.5, 0, Math.PI * 2);
-    g.fill();
-    g.restore();
   }
 
   // ---- loop, sizing, start and stop ------------------------------------------------------
@@ -357,7 +356,10 @@ const StretchGame = (() => {
     cy = H / 2;
     if (!r.length || (oldW === W && oldH === H)) return;
     // same shape, fitted to the new screen
+    // same shape, fitted to the new screen (keeping any pulls, scaled to fit)
+    const kept = home.map((h, i) => h / base[i]);
     fitHome();
+    home = base.map((b, i) => b * kept[i]);
     r = [...home];
     v = home.map(() => 0);
     grabs.clear();
