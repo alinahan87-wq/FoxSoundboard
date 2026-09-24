@@ -10,7 +10,7 @@ full-screen like a normal app, and it works with no internet.
 ## Toddler-friendly by design
 
 - **Big buttons, no words.** Just colours and pictures. Sound plays the instant a finger lands.
-- **Same layout every time.** Nothing moves around, no pop-ups, no ads, no menus.
+- **Calm and predictable.** No pop-ups, no ads, no menus.
 - **Surprise shuffle.** Every 10 taps the buttons tumble around and land in new spots (can be turned off in settings).
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
