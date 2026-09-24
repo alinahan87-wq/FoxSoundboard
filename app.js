@@ -1,11 +1,11 @@
-/* global BUTTONS, SYNTHS, EFFECTS */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame */
 'use strict';
 
 // ---------------------------------------------------------------------------
 // Settings (small per-device preferences)
 // ---------------------------------------------------------------------------
 
-const DEFAULTS = { volume: 0.8, overlap: false, animate: true, shuffle: true };
+const DEFAULTS = { mode: 'soundboard', volume: 0.8, overlap: false, animate: true, shuffle: true };
 
 function loadSettings() {
   try {
@@ -272,6 +272,25 @@ async function shuffleBoard() {
 }
 
 // ---------------------------------------------------------------------------
+// Modes: which activity is on screen. Only changeable from grown-up settings.
+// ---------------------------------------------------------------------------
+
+const MODES = ['soundboard', 'colour'];
+const colourScreen = document.getElementById('colour-game');
+
+function setMode(mode) {
+  if (!MODES.includes(mode)) mode = DEFAULTS.mode;
+  settings.mode = mode;
+  saveSettings();
+  if (ctx) stopAll();
+  board.hidden = mode !== 'soundboard';
+  colourScreen.hidden = mode !== 'colour';
+  if (mode === 'colour') ColourGame.start();
+  else ColourGame.stop();
+  presses = 0;
+}
+
+// ---------------------------------------------------------------------------
 // Grown-up gate: hold the gear for 2 seconds
 // ---------------------------------------------------------------------------
 
@@ -303,6 +322,7 @@ const volumeInput = document.getElementById('volume');
 const overlapInput = document.getElementById('overlap');
 const animateInput = document.getElementById('animate');
 const shuffleInput = document.getElementById('shuffle');
+const modeInputs = document.querySelectorAll('input[name="mode"]');
 const soundList = document.getElementById('sound-list');
 const fileInput = document.getElementById('file-input');
 let pickingFor = null;
@@ -320,6 +340,9 @@ animateInput.addEventListener('change', () => {
   settings.animate = animateInput.checked;
   saveSettings();
 });
+modeInputs.forEach((input) => input.addEventListener('change', () => {
+  if (input.checked) setMode(input.value);
+}));
 shuffleInput.addEventListener('change', () => {
   settings.shuffle = shuffleInput.checked;
   presses = 0;
@@ -331,6 +354,7 @@ function openSettings() {
   overlapInput.checked = settings.overlap;
   animateInput.checked = settings.animate;
   shuffleInput.checked = settings.shuffle;
+  modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
   renderSoundList();
   dialog.showModal();
 }
@@ -419,5 +443,6 @@ if ('serviceWorker' in navigator) {
 }
 
 renderBoard();
+setMode(settings.mode);
 keepAwake();
 loadCustomSounds();

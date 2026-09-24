@@ -11,6 +11,7 @@ full-screen like a normal app, and it works with no internet.
 
 - **Big buttons, no words.** Just colours and pictures. Sound plays the instant a finger lands.
 - **Calm and predictable.** No pop-ups, no ads, no menus.
+- **Two activities.** Soundboard and Colour match (tap the four squares until they're all the same colour, then bubbles!). Switch between them in grown-up settings.
 - **Surprise shuffle.** Every 10 taps the buttons tumble around and land in new spots (can be turned off in settings).
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
@@ -22,9 +23,10 @@ full-screen like a normal app, and it works with no internet.
 ## Putting it on the tablet
 
 1. **Publish it (one-time):** in this GitHub repo go to **Settings → Pages**, and under
-   *Build and deployment* set **Source** to **GitHub Actions**. Then merge this branch
-   into `main`. The included workflow publishes the app to
-   `https://<your-username>.github.io/FoxSoundboard/`.
+   *Build and deployment* set **Source** to **GitHub Actions**. Then go to the **Actions**
+   tab → **Deploy to GitHub Pages** → **Run workflow**. That publishes the app to
+   `https://<your-username>.github.io/FoxSoundboard/`. Run it again whenever you want
+   the tablet to get the latest changes.
 2. On the tablet, open that link in **Chrome**.
 3. Tap **⋮ → Add to Home screen → Install**.
 4. Open it from the new home-screen icon. It runs full-screen.
@@ -57,7 +59,8 @@ built-in sound back.
 | `index.html` | Page layout and the settings dialog |
 | `style.css` | Look and feel (landscape 4×2 grid, portrait 2×4) |
 | `sounds.js` | The 8 buttons (label, emoji, colour) and their built-in synthesised sounds |
-| `app.js` | Audio playback, custom-sound storage, grown-up gate, settings |
+| `app.js` | Audio playback, custom-sound storage, grown-up gate, settings, switching activities |
+| `colour.js` | The Colour match activity |
 | `sw.js` | Offline cache. **Bump `VERSION`** when you change any file |
 | `manifest.webmanifest`, `icons/` | What makes it installable as an app |
 

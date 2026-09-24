@@ -129,4 +129,11 @@ const EFFECTS = {
   whoosh: (ctx, out) => noiseSweep(ctx, out, { dur: 0.3, from: 600, to: 2400, gain: 0.12 }),
   // little "plip" when the buttons land
   land: (ctx, out) => tone(ctx, out, { freq: 600, dur: 0.18, type: 'sine', gain: 0.3, slideTo: 1100 }),
+  // colour match: a happy ding, one note of a cheerful scale per colour
+  ding: (ctx, out, step) => {
+    const scale = [N.C5, N.D5, N.E5, N.G5, N.A5, N.C6, N.D6];
+    return bell(ctx, out, scale[step % scale.length], 0, 0.4, 0.35);
+  },
+  // bubble pop
+  pop: (ctx, out) => tone(ctx, out, { freq: 700 + Math.random() * 500, dur: 0.08, type: 'sine', gain: 0.4, slideTo: 1800 }),
 };

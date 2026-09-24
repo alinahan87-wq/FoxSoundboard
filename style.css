@@ -19,6 +19,8 @@
 
 * { box-sizing: border-box; }
 
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   height: 100%;
@@ -195,6 +197,7 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
 
 h1 { font-size: 1.5rem; margin: 0; }
 h2 { font-size: 1.15rem; margin: 24px 0 4px; }
+h3 { font-size: 1rem; margin: 20px 0 4px; }
 
 .close {
   width: 44px;
@@ -265,3 +268,134 @@ h2 { font-size: 1.15rem; margin: 24px 0 4px; }
 }
 
 .actions button:active { transform: translateY(2px); border-bottom-width: 2px; }
+
+/* ---------- activity picker (in settings) ---------- */
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.mode-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 2px solid var(--line);
+  border-bottom-width: 4px;
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.mode-card input { position: absolute; opacity: 0; pointer-events: none; }
+.mode-card .mode-art { font-size: 32px; line-height: 1.2; }
+.mode-card small { color: var(--muted); }
+
+.mode-card:has(input:checked) {
+  border-color: #58cc02;
+  background: color-mix(in srgb, #58cc02 12%, var(--panel));
+}
+
+.mode-card:has(input:focus-visible) { outline: 3px solid #1cb0f6; outline-offset: 2px; }
+
+/* ---------- colour match ---------- */
+
+#colour-game {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--gap);
+}
+
+.squares {
+  --depth: clamp(8px, 1.4vmin, 14px);
+  --side: min(calc(100vw - var(--gap) * 2), calc(100vh - var(--gap) * 2 - var(--depth)));
+  width: var(--side);
+  height: var(--side);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--gap);
+  padding-bottom: var(--depth);
+}
+
+.colour-sq {
+  border: none;
+  border-radius: clamp(24px, 5vmin, 48px);
+  background: var(--c);
+  box-shadow: 0 var(--depth) 0 color-mix(in srgb, var(--c) 75%, black);
+  touch-action: none;
+  cursor: pointer;
+  transition: background-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+
+.colour-sq.squish { animation: squish 260ms cubic-bezier(.3, 1.6, .5, 1); }
+
+@keyframes squish {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+#colour-game.won .colour-sq { animation: cheer 700ms ease-in-out 2; }
+
+@keyframes cheer {
+  0%, 100% { transform: none; }
+  25% { transform: translateY(-12px) rotate(-4deg); }
+  75% { transform: translateY(-12px) rotate(4deg); }
+}
+
+/* ---------- celebration bubbles ---------- */
+
+#bubbles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 4;
+  transition: opacity 450ms ease-out;
+}
+
+#bubbles.clearing { opacity: 0; }
+
+.bubble {
+  position: absolute;
+  left: calc(var(--x) - var(--size) / 2);
+  bottom: calc(var(--size) * -1.2);
+  width: var(--size);
+  height: var(--size);
+  pointer-events: auto;
+  animation: rise var(--rise) cubic-bezier(.35, .1, .6, 1) forwards;
+}
+
+.bubble-body {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 4px solid color-mix(in srgb, var(--c) 85%, black);
+  background:
+    radial-gradient(ellipse 22% 14% at 32% 26%, #fff 90%, transparent 100%),
+    radial-gradient(ellipse 7% 7% at 60% 18%, #fff 90%, transparent 100%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--c) 25%, transparent) 55%, color-mix(in srgb, var(--c) 65%, transparent) 100%);
+  animation: sway var(--sway) ease-in-out infinite alternate;
+}
+
+.bubble.popped { animation-play-state: paused; }
+.bubble.popped .bubble-body { animation: popped 180ms ease-out forwards; }
+
+@keyframes rise {
+  to { transform: translateY(calc(-100vh - var(--size) * 2.5)); }
+}
+
+@keyframes sway {
+  from { transform: translateX(calc(var(--drift) * -1)) scale(1, 0.96); }
+  to   { transform: translateX(var(--drift)) scale(0.96, 1); }
+}
+
+@keyframes popped {
+  to { transform: scale(1.5); opacity: 0; }
+}

@@ -14,6 +14,11 @@
 <body>
   <main id="board" aria-label="Sound buttons"></main>
 
+  <main id="colour-game" aria-label="Colour match" hidden>
+    <div class="squares"></div>
+  </main>
+  <div id="bubbles" aria-hidden="true"></div>
+
   <!-- Grown-up gate: must be held down for 2 seconds, so little fingers can't open it by accident -->
   <button id="parent-gate" aria-label="Hold for grown-up settings">
     <svg viewBox="0 0 36 36" aria-hidden="true">
@@ -30,11 +35,29 @@
         <button class="close" value="close" aria-label="Close">✕</button>
       </header>
 
+      <h2>Activity</h2>
+      <div class="modes" role="radiogroup" aria-label="Activity">
+        <label class="mode-card">
+          <input type="radio" name="mode" value="soundboard">
+          <span class="mode-art" aria-hidden="true">🔊</span>
+          <b>Soundboard</b>
+          <small>8 buttons that play sounds</small>
+        </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="colour">
+          <span class="mode-art" aria-hidden="true">🎨</span>
+          <b>Colour match</b>
+          <small>Tap squares until all 4 match</small>
+        </label>
+      </div>
+
+      <h2>Everywhere</h2>
       <label class="row">
         <span>Volume</span>
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
 
+      <h2>Soundboard</h2>
       <label class="row">
         <span>Let sounds overlap when buttons are mashed</span>
         <input id="overlap" type="checkbox">
@@ -50,7 +73,7 @@
         <input id="shuffle" type="checkbox">
       </label>
 
-      <h2>Sounds</h2>
+      <h3>Sounds</h3>
       <p class="hint">
         Every button has a built-in sound to start with. Tap <b>Choose file</b> to swap in your own
         (an MP3, M4A, WAV, or even a screen recording saved on this tablet; silence at the start and end is trimmed automatically). Sounds stay on this tablet and work offline.
@@ -67,6 +90,7 @@
   <input id="file-input" type="file" accept="audio/*,video/mp4,video/*" hidden>
 
   <script src="sounds.js"></script>
+  <script src="colour.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
