@@ -11,7 +11,7 @@ const DEFAULTS = {
   scratchSpeak: true, scratchBrush: 'bigger',
   bounceFloaty: false, bounceHum: true,
   blocksRecolour: true,
-  stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'nearly',
+  stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'full',
 };
 
 function loadSettings() {
@@ -27,6 +27,7 @@ function saveSettings() {
 }
 
 const settings = loadSettings();
+if (settings.stretchWin === 'nearly') settings.stretchWin = 'full'; // renamed setting
 
 // ---------------------------------------------------------------------------
 // Custom sound storage (IndexedDB, so files survive restarts and work offline)

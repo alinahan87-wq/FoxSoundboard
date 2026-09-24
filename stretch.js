@@ -389,6 +389,21 @@ const StretchGame = (() => {
     return polyArea(r) / polyArea(angles.map(maxLength));
   }
 
+  // How close the emptiest direction is to the screen edge (0..1). This stops a
+  // shape that's huge on one side but still leaves a big gap elsewhere from counting.
+  function reach() {
+    let worst = 1;
+    for (let i = 0; i < N; i++) worst = Math.min(worst, r[i] / maxLength(angles[i]));
+    return worst;
+  }
+
+  // The screen counts as full when enough of it is covered AND the shape gets
+  // close to the edge in every direction.
+  const GOALS = {
+    full: { area: 0.95, reach: 0.8 },
+    most: { area: 0.85, reach: 0.6 },
+  };
+
   function win() {
     celebrating = true;
     grabs.clear();
@@ -406,8 +421,8 @@ const StretchGame = (() => {
     if (!running) return;
     if (!celebrating) step();
     updateHum();
-    const goal = { nearly: 0.9, most: 0.75 }[settings.stretchWin];
-    if (!celebrating && goal && coverage() >= goal) win();
+    const goal = GOALS[settings.stretchWin];
+    if (!celebrating && goal && coverage() >= goal.area && reach() >= goal.reach) win();
     draw();
     frame = requestAnimationFrame(loop);
   }
@@ -464,5 +479,5 @@ const StretchGame = (() => {
   // A copy of the outline points (used by tests to check it never crosses itself).
   const outline = () => outlinePoints();
 
-  return { start, stop, reset, outline };
+  return { start, stop, reset, outline, coverage, reach };
 })();
