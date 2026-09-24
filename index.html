@@ -30,23 +30,32 @@
   </main>
   <div id="bubbles" aria-hidden="true"></div>
 
-  <!-- Grown-up gate: must be held down for 2 seconds, so little fingers can't open it by accident -->
-  <button id="parent-gate" aria-label="Hold for grown-up settings">
-    <svg viewBox="0 0 36 36" aria-hidden="true">
+  <!-- Grown-up gates: each must be held down for 2 seconds, so little fingers can't open them by accident.
+       ▶ (top right) picks the game; ⚙️ (bottom right) holds the settings for the current game. -->
+  <button id="games-gate" class="gate" aria-label="Hold to choose a game">
+    <svg class="ring-svg" viewBox="0 0 36 36" aria-hidden="true">
+      <circle class="ring-bg" cx="18" cy="18" r="16"/>
+      <circle class="ring" cx="18" cy="18" r="16"/>
+    </svg>
+    <svg class="icon" viewBox="0 0 36 36" aria-hidden="true">
+      <circle cx="18" cy="18" r="10.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <path d="M15.2 13.4 L23.4 18 L15.2 22.6 Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <button id="parent-gate" class="gate" aria-label="Hold for grown-up settings">
+    <svg class="ring-svg" viewBox="0 0 36 36" aria-hidden="true">
       <circle class="ring-bg" cx="18" cy="18" r="16"/>
       <circle class="ring" cx="18" cy="18" r="16"/>
     </svg>
     <span aria-hidden="true">⚙️</span>
   </button>
 
-  <dialog id="settings">
+  <dialog id="games">
     <form method="dialog" class="settings-inner">
       <header>
-        <h1>Grown-up settings</h1>
+        <h1>Choose a game</h1>
         <button class="close" value="close" aria-label="Close">✕</button>
       </header>
-
-      <h2>Activity</h2>
       <div role="radiogroup" aria-label="Activity">
       <div class="modes">
         <label class="mode-card">
@@ -90,6 +99,15 @@
         </label>
       </div>
       </div>
+    </form>
+  </dialog>
+
+  <dialog id="settings">
+    <form method="dialog" class="settings-inner">
+      <header>
+        <h1>Grown-up settings</h1>
+        <button class="close" value="close" aria-label="Close">✕</button>
+      </header>
 
       <h2>All games</h2>
       <label class="row">

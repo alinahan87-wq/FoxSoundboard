@@ -306,28 +306,34 @@ function setMode(mode) {
 }
 
 // ---------------------------------------------------------------------------
-// Grown-up gate: hold the gear for 2 seconds
+// Grown-up gates: hold ▶ (top right) to pick a game, or ⚙️ (bottom right) for
+// the current game's settings. Both need a 2-second hold.
 // ---------------------------------------------------------------------------
 
-const gate = document.getElementById('parent-gate');
 const dialog = document.getElementById('settings');
+const gamesDialog = document.getElementById('games');
 const HOLD_MS = 2000;
-let holdTimer = null;
 
-gate.addEventListener('pointerdown', (e) => {
-  e.preventDefault();
-  gate.classList.add('holding');
-  holdTimer = setTimeout(() => {
-    gate.classList.remove('holding');
-    openSettings();
-  }, HOLD_MS);
-});
-for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) {
-  gate.addEventListener(ev, () => {
-    clearTimeout(holdTimer);
-    gate.classList.remove('holding');
+function holdToOpen(gate, open) {
+  let holdTimer = null;
+  gate.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    gate.classList.add('holding');
+    holdTimer = setTimeout(() => {
+      gate.classList.remove('holding');
+      open();
+    }, HOLD_MS);
   });
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) {
+    gate.addEventListener(ev, () => {
+      clearTimeout(holdTimer);
+      gate.classList.remove('holding');
+    });
+  }
 }
+
+holdToOpen(document.getElementById('parent-gate'), () => openSettings());
+holdToOpen(document.getElementById('games-gate'), () => openGames());
 
 // ---------------------------------------------------------------------------
 // Settings screen
@@ -365,7 +371,7 @@ animateInput.addEventListener('change', () => {
 // the game that's already selected is tapped again, so that closes settings too.
 modeInputs.forEach((input) => input.addEventListener('click', () => {
   if (input.value !== settings.mode) setMode(input.value);
-  setTimeout(() => dialog.close(), 150); // a moment to see the card light up
+  setTimeout(() => gamesDialog.close(), 150); // a moment to see the card light up
 }));
 numbersRestartInput.addEventListener('change', () => {
   settings.numbersRestart = numbersRestartInput.checked;
@@ -409,9 +415,13 @@ function openSettings() {
   scratchSpeakInput.checked = settings.scratchSpeak;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';
-  modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
   renderSoundList();
   dialog.showModal();
+}
+
+function openGames() {
+  modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
+  gamesDialog.showModal();
 }
 
 function renderSoundList() {

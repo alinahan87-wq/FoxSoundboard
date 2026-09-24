@@ -13,12 +13,14 @@ Every game must follow this pattern:
    `<script>` before `app.js`, and add the file to `FILES` in `sw.js`.
 3. **Register it** in `GAMES` in `app.js`.
 4. **Activity card:** add a `.mode-card` radio (`name="mode" value="<name>"`) to the second group
-   of the Activity picker in grown-up settings (the first group is Soundboard and Circuit). Games are
-   only switchable from there, never from the child's screen.
+   of the game picker (the `#games` dialog, opened by holding ▶ in the top-right corner; the first
+   group is Soundboard and Circuit). Games are only switchable from there, never from the child's screen.
+   Keep game content clear of the top-right (▶) and bottom-right (⚙️) corners.
 5. **Circuit:** games take `start({ onDone })`. When `onDone` is set, a win (always ending with the
    `Celebrate` bubbles) calls `onDone()` instead of starting a new round. Add the game to `STEPS` in
    `circuit.js`, and add `circuit` to its settings section's `data-mode` (e.g. `data-mode="numbers circuit"`).
-6. **Game-specific settings** go in their own `<section data-mode="<name>">` in the settings dialog,
+6. **Game-specific settings** go in their own `<section data-mode="<name>">` in the settings dialog
+   (`#settings`, opened by holding ⚙️),
    so they only appear while that game is selected. Settings shared by every game go under
    "All games". Add new setting defaults to `DEFAULTS` in `app.js`.
 7. Bump `VERSION` in `sw.js`.

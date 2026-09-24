@@ -113,52 +113,62 @@ html, body {
   .sound-btn.boing .emoji { animation: none; }
 }
 
-/* ---------- grown-up gate ---------- */
+/* ---------- grown-up gates ---------- */
 
-#parent-gate {
+.gate {
   position: fixed;
-  right: calc(4px + env(safe-area-inset-right));
-  bottom: calc(2px + env(safe-area-inset-bottom));
   width: 34px;
   height: 34px;
   padding: 0;
   border: none;
   background: transparent;
+  color: var(--text);
   opacity: 0.35;
   touch-action: none;
   z-index: 5;
 }
 
-#parent-gate span {
+#parent-gate {
+  right: calc(4px + env(safe-area-inset-right));
+  bottom: calc(2px + env(safe-area-inset-bottom));
+}
+
+#games-gate {
+  right: calc(4px + env(safe-area-inset-right));
+  top: calc(2px + env(safe-area-inset-top));
+}
+
+.gate span,
+.gate svg {
   position: absolute;
   inset: 0;
+}
+
+.gate span {
   display: grid;
   place-items: center;
   font-size: 16px;
 }
 
-#parent-gate svg {
-  position: absolute;
-  inset: 0;
-  transform: rotate(-90deg);
-}
+.gate .ring-svg { transform: rotate(-90deg); }
 
-#parent-gate circle {
+.gate circle.ring-bg,
+.gate circle.ring {
   fill: none;
   stroke-width: 3;
 }
 
-#parent-gate .ring-bg { stroke: transparent; }
+.gate .ring-bg { stroke: transparent; }
 
-#parent-gate .ring {
+.gate .ring {
   stroke: #58cc02;
   stroke-dasharray: 100.53;   /* 2π·16 */
   stroke-dashoffset: 100.53;
 }
 
-#parent-gate.holding { opacity: 1; }
-#parent-gate.holding .ring-bg { stroke: var(--line); }
-#parent-gate.holding .ring {
+.gate.holding { opacity: 1; }
+.gate.holding .ring-bg { stroke: var(--line); }
+.gate.holding .ring {
   transition: stroke-dashoffset 2s linear;
   stroke-dashoffset: 0;
 }
@@ -279,6 +289,8 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
 .actions button:active { transform: translateY(2px); border-bottom-width: 2px; }
 
 /* ---------- activity picker (in settings) ---------- */
+
+.settings-inner > [role="radiogroup"] { margin-top: 12px; }
 
 .modes {
   display: grid;

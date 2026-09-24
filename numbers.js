@@ -74,11 +74,11 @@ const NumbersGame = (() => {
     const pad = Math.min(w, h) * 0.03;
     const cellW = (w - pad * 2) / cols;
     const cellH = (h - pad * 2) / rows;
-    // Every cell except the bottom-right one, which is where the settings gear sits.
+    // Every cell except the top-right and bottom-right ones, where the grown-up buttons sit.
     const cells = [];
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        if (!(r === rows - 1 && c === cols - 1)) cells.push({ r, c });
+        if (!(c === cols - 1 && (r === 0 || r === rows - 1))) cells.push({ r, c });
       }
     }
     const picks = shuffled(cells).slice(0, COUNT);

@@ -11,13 +11,14 @@ full-screen like a normal app, and it works with no internet.
 
 - **Big buttons, no words.** Just colours and pictures. Sound plays the instant a finger lands.
 - **Calm and predictable.** No pop-ups, no ads, no menus.
-- **Five activities.** Soundboard; Colour match (tap the four squares until they're all the same colour, then bubbles!); Spell FOX (tap the three letters until they read F-O-X); Count to 10 (tap the scattered numbers in order); and Scratch & reveal (scratch away a pattern to find an animal, whose name is then shown and spoken). Switch between them in grown-up settings. **Circuit** plays the four games in turn, moving on after each win.
+- **Five activities.** Soundboard; Colour match (tap the four squares until they're all the same colour, then bubbles!); Spell FOX (tap the three letters until they read F-O-X); Count to 10 (tap the scattered numbers in order); and Scratch & reveal (scratch away a pattern to find an animal, whose name is then shown and spoken). Switch between them from the grown-up game menu. **Circuit** plays the four games in turn, moving on after each win.
 - **Surprise shuffle.** Every 10 taps the buttons tumble around and land in new spots (can be turned off in settings).
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
 - **No accidental exits.** No long-press menus, no zooming, no scrolling. The screen stays awake.
-- **Grown-up gate.** Settings open only by *holding* the faint ⚙️ in the bottom-right
-  corner for 2 seconds.
+- **Grown-up gates.** Two faint buttons that only open when *held* for 2 seconds:
+  ▶ in the top-right corner picks the game, and ⚙️ in the bottom-right corner has the
+  settings for the game that's on.
 - **Gentle sounds.** The "oops" sound is a soft bwoop, not a harsh buzzer.
 
 ## Putting it on the tablet
