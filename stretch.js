@@ -37,6 +37,7 @@ const StretchGame = (() => {
   let v = [];       // how fast each spoke is growing or shrinking
   let shape = 'circle';
   let colour = PALETTE[0].hex;
+  let hsl = { h: 0, s: 90, l: 60 }; // the colour on screen; its hue drifts as the outline is pulled around
   const grabs = new Map(); // pointerId -> { x, y }
   let running = false;
   let frame = 0;
@@ -119,6 +120,7 @@ const StretchGame = (() => {
     shape = choice === 'random' ? options[Math.floor(Math.random() * options.length)] : choice;
     const others = PALETTE.filter((p) => p.hex !== colour);
     colour = others[Math.floor(Math.random() * others.length)].hex;
+    hsl = toHsl(colour);
     fitHome();
     // pop in from small and wobble into shape
     r = home.map((h) => h * 0.3);
@@ -231,6 +233,8 @@ const StretchGame = (() => {
     const gr = grabs.get(e.pointerId);
     if (!gr) return;
     const p = point(e);
+    // Moving it around slowly shifts the colour through the rainbow.
+    if (settings.stretchColour) hsl.h = (hsl.h + Math.hypot(p.x - gr.x, p.y - gr.y) * 0.15) % 360;
     gr.x = p.x;
     gr.y = p.y;
   });
@@ -300,10 +304,25 @@ const StretchGame = (() => {
 
   // ---- drawing ----------------------------------------------------------------------
 
-  function darker(hex, amount) {
+  function toHsl(hex) {
     const n = parseInt(hex.slice(1), 16);
-    const k = 1 - amount / 100;
-    return `rgb(${Math.round(((n >> 16) & 255) * k)}, ${Math.round(((n >> 8) & 255) * k)}, ${Math.round((n & 255) * k)})`;
+    const rr = ((n >> 16) & 255) / 255;
+    const gg = ((n >> 8) & 255) / 255;
+    const bb = (n & 255) / 255;
+    const max = Math.max(rr, gg, bb);
+    const min = Math.min(rr, gg, bb);
+    const l = (max + min) / 2;
+    const d = max - min;
+    let h = 0;
+    let s = 0;
+    if (d) {
+      s = d / (1 - Math.abs(2 * l - 1));
+      if (max === rr) h = ((gg - bb) / d) % 6;
+      else if (max === gg) h = (bb - rr) / d + 2;
+      else h = (rr - gg) / d + 4;
+      h = (h * 60 + 360) % 360;
+    }
+    return { h, s: Math.round(s * 100), l: Math.round(l * 100) };
   }
 
   function outlinePoints() {
@@ -323,11 +342,15 @@ const StretchGame = (() => {
       g.quadraticCurveTo(pts[i].x, pts[i].y, m.x, m.y);
     }
     g.closePath();
-    g.fillStyle = colour;
+    // a little brighter while it's being stretched
+    let s = 0;
+    for (const gr of grabs.values()) s = Math.max(s, stretchOf(gr));
+    // Same brightness for every colour, so each shade of the rainbow looks equally bold.
+    g.fillStyle = `hsl(${hsl.h.toFixed(1)}, 88%, ${(58 + s * 8).toFixed(1)}%)`;
     g.fill();
     g.lineWidth = thick();
     g.lineJoin = 'round';
-    g.strokeStyle = darker(colour, 35);
+    g.strokeStyle = `hsl(${hsl.h.toFixed(1)}, 80%, 36%)`;
     g.stroke();
 
   }
