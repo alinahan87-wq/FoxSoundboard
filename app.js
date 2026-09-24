@@ -339,6 +339,8 @@ const numbersRestartInput = document.getElementById('numbers-restart');
 const numbersHintInput = document.getElementById('numbers-hint');
 const scratchSpeakInput = document.getElementById('scratch-speak');
 const scratchBrushInput = document.getElementById('scratch-brush');
+const voiceTestButton = document.getElementById('voice-test');
+const voiceStatus = document.getElementById('voice-status');
 const soundList = document.getElementById('sound-list');
 const fileInput = document.getElementById('file-input');
 let pickingFor = null;
@@ -370,6 +372,16 @@ scratchSpeakInput.addEventListener('change', () => {
   settings.scratchSpeak = scratchSpeakInput.checked;
   saveSettings();
 });
+voiceTestButton.addEventListener('click', () => {
+  pickVoice(); // voices can finish loading late on Android
+  if (!say("Hello! It's a fox!")) {
+    voiceStatus.textContent = "This browser can't speak. Open the app in Chrome, and check a text-to-speech voice is installed in Android Settings.";
+    return;
+  }
+  voiceStatus.textContent = voice
+    ? `Using the voice "${voice.name}". If you heard nothing, check the tablet's media volume.`
+    : "Using the device's default voice. If you heard nothing, check Android Settings > Text-to-speech output has a voice installed.";
+});
 scratchBrushInput.addEventListener('change', () => {
   settings.scratchBrush = scratchBrushInput.value;
   saveSettings();
@@ -393,6 +405,7 @@ function openSettings() {
   numbersHintInput.checked = settings.numbersHint;
   scratchSpeakInput.checked = settings.scratchSpeak;
   scratchBrushInput.value = settings.scratchBrush;
+  voiceStatus.textContent = '';
   modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
   renderSoundList();
   dialog.showModal();
@@ -451,6 +464,51 @@ fileInput.addEventListener('change', async () => {
     alert("Sorry, that file couldn't be played. Try an MP3, M4A, WAV or MP4 file.");
   }
 });
+
+// ---------------------------------------------------------------------------
+// Speaking words out loud, with the tablet's own text-to-speech voice
+// ---------------------------------------------------------------------------
+
+const canSpeak = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+let voice = null;
+
+// Prefer the device's default voice if it's English, then any English voice.
+function pickVoice() {
+  if (!canSpeak) return;
+  const voices = speechSynthesis.getVoices();
+  const english = voices.filter((v) => /^en\b/i.test(v.lang));
+  voice = english.find((v) => v.default) || english.find((v) => v.localService) || english[0] || null;
+}
+if (canSpeak) {
+  pickVoice();
+  speechSynthesis.addEventListener?.('voiceschanged', pickVoice);
+}
+
+function say(text) {
+  if (!canSpeak) return false;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    if (voice) u.voice = voice;
+    u.lang = voice ? voice.lang : 'en';
+    u.rate = 0.8;
+    u.pitch = 1.15;
+    u.volume = settings.volume;
+    // Chrome can drop speech queued straight after a cancel, so only cancel
+    // when something is actually talking, and give it a moment first.
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+      setTimeout(() => speechSynthesis.speak(u), 120);
+    } else {
+      speechSynthesis.speak(u);
+    }
+    return true;
+  } catch {
+    return false; // no voice available; games still show the word on screen
+  }
+}
+say.stop = () => {
+  if (canSpeak && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
+};
 
 // ---------------------------------------------------------------------------
 // Tablet niceties

@@ -1,4 +1,4 @@
-/* global audio, master, EFFECTS, SYNTHS, PALETTE, settings */
+/* global audio, master, EFFECTS, SYNTHS, PALETTE, settings, say */
 /* exported ScratchGame */
 'use strict';
 
@@ -212,15 +212,7 @@ const ScratchGame = (() => {
   }
 
   function speak(text) {
-    if (!settings.scratchSpeak || !('speechSynthesis' in window)) return;
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.8;
-      u.pitch = 1.15;
-      u.volume = settings.volume;
-      speechSynthesis.speak(u);
-    } catch { /* no voice available, the name still shows on screen */ }
+    if (settings.scratchSpeak) say(text);
   }
 
   function newRound() {
@@ -287,7 +279,7 @@ const ScratchGame = (() => {
     timers.forEach(clearTimeout);
     timers = [];
     fingers.clear();
-    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    say.stop();
     window.removeEventListener('resize', onResize);
   }
 
