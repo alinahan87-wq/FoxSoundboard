@@ -82,7 +82,7 @@ const BounceGame = (() => {
     osc.frequency.setValueAtTime(180, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(620, ctx.currentTime + CHARGE_MS / 1000);
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.035, ctx.currentTime + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.0175, ctx.currentTime + 0.15);
     osc.connect(gain).connect(master);
     osc.start();
     hum = { osc, gain };
