@@ -14,6 +14,7 @@ const BlocksGame = (() => {
   const BUMP_SPEED = 2.2;      // how hard a hit has to be to count as a bump
   const BUMP_COOLDOWN_MS = 350; // per block, so resting contacts don't chatter
   const MAX_SOUNDS_PER_S = 14;
+  const BUMP_VOLUME = 0.25; // bumps play at a quarter of full volume
 
   const screen = document.getElementById('blocks-game');
   const canvas = screen.querySelector('canvas');
@@ -121,7 +122,7 @@ const BlocksGame = (() => {
     recentSounds = recentSounds.filter((t) => now - t < 1000);
     if (recentSounds.length >= MAX_SOUNDS_PER_S) return;
     recentSounds.push(now);
-    EFFECTS.marimba(audio(), master, kind, strength);
+    EFFECTS.marimba(audio(), master, kind, strength, BUMP_VOLUME);
   }
 
   // ---- dragging --------------------------------------------------------------

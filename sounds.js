@@ -152,11 +152,11 @@ const EFFECTS = {
   },
   // building blocks: a wooden marimba "tok" on a happy scale. Long blocks sound
   // lower, triangles higher; harder bumps are louder.
-  marimba: (ctx, out, kind, strength) => {
+  marimba: (ctx, out, kind, strength, volume = 1) => {
     const notes = [N.C5, N.D5, N.E5, N.G5, N.A5];
     const octave = kind === 'rect' ? 0.5 : kind === 'triangle' ? 2 : 1;
     const f = notes[Math.floor(Math.random() * notes.length)] * octave;
-    const gain = 0.12 + 0.35 * strength;
+    const gain = (0.12 + 0.35 * strength) * volume;
     tone(ctx, out, { freq: f * 4, dur: 0.04, type: 'sine', gain: gain * 0.3 });
     return tone(ctx, out, { freq: f, dur: 0.22 + 0.15 * strength, type: 'sine', gain });
   },
