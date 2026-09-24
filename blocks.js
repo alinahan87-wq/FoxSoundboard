@@ -14,7 +14,7 @@ const BlocksGame = (() => {
   const BUMP_SPEED = 2.2;      // how hard a hit has to be to count as a bump
   const BUMP_COOLDOWN_MS = 350; // per block, so resting contacts don't chatter
   const MAX_SOUNDS_PER_S = 14;
-  const BUMP_VOLUME = 0.25; // bumps play at a quarter of full volume
+  const BUMP_VOLUME = 0.25; // bumps and grabs play at a quarter of full volume
 
   const screen = document.getElementById('blocks-game');
   const canvas = screen.querySelector('canvas');
@@ -145,7 +145,7 @@ const BlocksGame = (() => {
     c.localPoint = local;
     Composite.add(engine.world, c);
     drags.set(e.pointerId, c);
-    EFFECTS.marimba(audio(), master, hit.kind, 0.25);
+    EFFECTS.marimba(audio(), master, hit.kind, 0.25, BUMP_VOLUME); // grabbing is quiet too
   });
 
   canvas.addEventListener('pointermove', (e) => {
