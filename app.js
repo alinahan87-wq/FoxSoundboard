@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -8,6 +8,7 @@
 const DEFAULTS = {
   mode: 'soundboard', volume: 0.8, overlap: false, animate: true, shuffle: true,
   numbersRestart: false, numbersHint: true,
+  scratchSpeak: true, scratchBrush: 'bigger',
 };
 
 function loadSettings() {
@@ -286,6 +287,7 @@ const GAMES = {
   colour: ColourGame,
   fox: FoxGame,
   numbers: NumbersGame,
+  scratch: ScratchGame,
 };
 
 function setMode(mode) {
@@ -335,6 +337,8 @@ const shuffleInput = document.getElementById('shuffle');
 const modeInputs = document.querySelectorAll('input[name="mode"]');
 const numbersRestartInput = document.getElementById('numbers-restart');
 const numbersHintInput = document.getElementById('numbers-hint');
+const scratchSpeakInput = document.getElementById('scratch-speak');
+const scratchBrushInput = document.getElementById('scratch-brush');
 const soundList = document.getElementById('sound-list');
 const fileInput = document.getElementById('file-input');
 let pickingFor = null;
@@ -362,6 +366,14 @@ numbersRestartInput.addEventListener('change', () => {
   settings.numbersRestart = numbersRestartInput.checked;
   saveSettings();
 });
+scratchSpeakInput.addEventListener('change', () => {
+  settings.scratchSpeak = scratchSpeakInput.checked;
+  saveSettings();
+});
+scratchBrushInput.addEventListener('change', () => {
+  settings.scratchBrush = scratchBrushInput.value;
+  saveSettings();
+});
 numbersHintInput.addEventListener('change', () => {
   settings.numbersHint = numbersHintInput.checked;
   saveSettings();
@@ -379,6 +391,8 @@ function openSettings() {
   shuffleInput.checked = settings.shuffle;
   numbersRestartInput.checked = settings.numbersRestart;
   numbersHintInput.checked = settings.numbersHint;
+  scratchSpeakInput.checked = settings.scratchSpeak;
+  scratchBrushInput.value = settings.scratchBrush;
   modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
   renderSoundList();
   dialog.showModal();

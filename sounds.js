@@ -139,6 +139,8 @@ const EFFECTS = {
     const scale = [N.C5, N.D5, N.E5, N.G5, N.A5, N.C6, N.D6, N.E6, N.G6, N.A6];
     return bell(ctx, out, scale[Math.min(step, scale.length - 1)], 0, 0.4, 0.35);
   },
+  // a soft scratchy "shh" while scratching
+  scratch: (ctx, out) => noiseSweep(ctx, out, { dur: 0.09, from: 3000, to: 1800, gain: 0.07 }),
   // bubble pop
   pop: (ctx, out) => tone(ctx, out, { freq: 700 + Math.random() * 500, dur: 0.08, type: 'sine', gain: 0.4, slideTo: 1800 }),
 };

@@ -21,6 +21,13 @@
     <div class="letters"></div>
   </main>
   <main id="numbers-game" data-mode="numbers" aria-label="Count to 10" hidden></main>
+  <main id="scratch-game" data-mode="scratch" aria-label="Scratch and reveal" hidden>
+    <div class="scratch-card">
+      <span class="animal" aria-hidden="true"></span>
+      <canvas aria-label="Scratch here"></canvas>
+    </div>
+    <div class="animal-name" aria-live="polite"></div>
+  </main>
   <div id="bubbles" aria-hidden="true"></div>
 
   <!-- Grown-up gate: must be held down for 2 seconds, so little fingers can't open it by accident -->
@@ -65,6 +72,12 @@
           <b>Count to 10</b>
           <small>Tap the numbers from 1 to 10 in order</small>
         </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="scratch">
+          <span class="mode-art" aria-hidden="true">🐾</span>
+          <b>Scratch &amp; reveal</b>
+          <small>Scratch away the pattern to find an animal</small>
+        </label>
       </div>
 
       <h2>All games</h2>
@@ -72,6 +85,22 @@
         <span>Volume</span>
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
+
+      <section data-mode="scratch">
+        <h2>Scratch &amp; reveal</h2>
+        <label class="row">
+          <span>Say the animal's name out loud</span>
+          <input id="scratch-speak" type="checkbox">
+        </label>
+        <label class="row">
+          <span>Scratch brush size</span>
+          <select id="scratch-brush">
+            <option value="big">Big</option>
+            <option value="bigger">Bigger</option>
+            <option value="huge">Huge</option>
+          </select>
+        </label>
+      </section>
 
       <section data-mode="numbers">
         <h2>Count to 10</h2>
@@ -124,6 +153,7 @@
   <script src="colour.js"></script>
   <script src="fox.js"></script>
   <script src="numbers.js"></script>
+  <script src="scratch.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

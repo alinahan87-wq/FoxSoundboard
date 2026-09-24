@@ -11,7 +11,7 @@ full-screen like a normal app, and it works with no internet.
 
 - **Big buttons, no words.** Just colours and pictures. Sound plays the instant a finger lands.
 - **Calm and predictable.** No pop-ups, no ads, no menus.
-- **Four activities.** Soundboard; Colour match (tap the four squares until they're all the same colour, then bubbles!); Spell FOX (tap the three letters until they read F-O-X); and Count to 10 (tap the scattered numbers in order). Switch between them in grown-up settings.
+- **Five activities.** Soundboard; Colour match (tap the four squares until they're all the same colour, then bubbles!); Spell FOX (tap the three letters until they read F-O-X); Count to 10 (tap the scattered numbers in order); and Scratch & reveal (scratch away a pattern to find an animal, whose name is then shown and spoken). Switch between them in grown-up settings.
 - **Surprise shuffle.** Every 10 taps the buttons tumble around and land in new spots (can be turned off in settings).
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
@@ -64,6 +64,7 @@ built-in sound back.
 | `colour.js` | The Colour match activity |
 | `fox.js` | The Spell FOX activity |
 | `numbers.js` | The Count to 10 activity |
+| `scratch.js` | The Scratch & reveal activity |
 | `sw.js` | Offline cache. **Bump `VERSION`** when you change any file |
 | `manifest.webmanifest`, `icons/` | What makes it installable as an app |
 
