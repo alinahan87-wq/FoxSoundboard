@@ -1,11 +1,11 @@
-/* global BUTTONS, SYNTHS */
+/* global BUTTONS, SYNTHS, EFFECTS */
 'use strict';
 
 // ---------------------------------------------------------------------------
 // Settings (small per-device preferences)
 // ---------------------------------------------------------------------------
 
-const DEFAULTS = { volume: 0.8, overlap: false, animate: true };
+const DEFAULTS = { volume: 0.8, overlap: false, animate: true, shuffle: true };
 
 function loadSettings() {
   try {
@@ -183,7 +183,9 @@ function renderBoard() {
     // pointerdown fires the instant a finger lands, which feels much snappier than click
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      if (shuffling) return;
       play(b.id);
+      countPress();
       if (settings.animate) {
         el.classList.remove('boing');
         void el.offsetWidth; // restart the animation
@@ -197,6 +199,75 @@ function renderBoard() {
     el.addEventListener('pointerleave', release);
 
     board.appendChild(el);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Shuffle: every 10 taps the buttons hop around and land in new places
+// ---------------------------------------------------------------------------
+
+const SHUFFLE_EVERY = 10;
+const HOPS = 4;
+let presses = 0;
+let shuffling = false;
+
+function countPress() {
+  if (!settings.shuffle) return;
+  presses++;
+  if (presses < SHUFFLE_EVERY) return;
+  presses = 0;
+  shuffling = true; // ignore taps from now until the buttons have landed
+  setTimeout(shuffleBoard, 600); // let the 10th tap's sound and bounce play first
+}
+
+// A random order in which every button ends up somewhere new.
+function derange(items) {
+  for (;;) {
+    const out = [...items];
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    if (out.every((el, i) => el !== items[i])) return out;
+  }
+}
+
+// Move the buttons into `order`, animating each one from its old spot to its
+// new one (measure, reorder, then play the difference back as a transform).
+function hopTo(order, { duration, easing, lift }) {
+  const before = new Map(order.map((el) => [el, el.getBoundingClientRect()]));
+  order.forEach((el) => board.appendChild(el));
+  return Promise.all(order.map((el) => {
+    const from = before.get(el);
+    const to = el.getBoundingClientRect();
+    const dx = from.left - to.left;
+    const dy = from.top - to.top;
+    const tilt = (Math.random() * 2 - 1) * 10;
+    el.style.zIndex = String(1 + Math.floor(Math.random() * order.length));
+    return el.animate([
+      { transform: `translate(${dx}px, ${dy}px)` },
+      { transform: `translate(${dx / 2}px, ${dy / 2}px) scale(${lift}) rotate(${tilt}deg)`, offset: 0.5 },
+      { transform: 'none' },
+    ], { duration, easing }).finished;
+  }));
+}
+
+async function shuffleBoard() {
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hops = reduceMotion ? 1 : HOPS;
+  for (const el of board.children) el.classList.remove('pressed', 'boing');
+  try {
+    for (let i = 0; i < hops; i++) {
+      const last = i === hops - 1;
+      EFFECTS.whoosh(audio(), master);
+      await hopTo(derange([...board.children]), last
+        ? { duration: 650, easing: 'cubic-bezier(.3, 1.35, .5, 1)', lift: 1.08 }
+        : { duration: 340, easing: 'ease-in-out', lift: 0.85 });
+    }
+    EFFECTS.land(audio(), master);
+  } finally {
+    for (const el of board.children) el.style.zIndex = '';
+    shuffling = false;
   }
 }
 
@@ -231,6 +302,7 @@ for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) {
 const volumeInput = document.getElementById('volume');
 const overlapInput = document.getElementById('overlap');
 const animateInput = document.getElementById('animate');
+const shuffleInput = document.getElementById('shuffle');
 const soundList = document.getElementById('sound-list');
 const fileInput = document.getElementById('file-input');
 let pickingFor = null;
@@ -248,11 +320,17 @@ animateInput.addEventListener('change', () => {
   settings.animate = animateInput.checked;
   saveSettings();
 });
+shuffleInput.addEventListener('change', () => {
+  settings.shuffle = shuffleInput.checked;
+  presses = 0;
+  saveSettings();
+});
 
 function openSettings() {
   volumeInput.value = settings.volume;
   overlapInput.checked = settings.overlap;
   animateInput.checked = settings.animate;
+  shuffleInput.checked = settings.shuffle;
   renderSoundList();
   dialog.showModal();
 }

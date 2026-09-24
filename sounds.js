@@ -4,7 +4,7 @@
 // straight away with no audio files. A grown-up can replace any of them with a
 // real recording from the settings screen.
 
-/* exported BUTTONS, SYNTHS */
+/* exported BUTTONS, SYNTHS, EFFECTS */
 
 const BUTTONS = [
   { id: 'correct',  label: 'Correct!',        emoji: '✅', color: '#58cc02', shade: '#46a302' },
@@ -121,4 +121,12 @@ const SYNTHS = {
     tone(ctx, out, { freq: 420, start: 0, dur: 0.28, type: 'sine', gain: 0.5, slideTo: 360 });
     return tone(ctx, out, { freq: 420, start: 0.34, dur: 0.4, type: 'sine', gain: 0.5, slideTo: 340 });
   },
+};
+
+// Sounds for the shuffle animation, not tied to a button.
+const EFFECTS = {
+  // soft swish for each hop
+  whoosh: (ctx, out) => noiseSweep(ctx, out, { dur: 0.3, from: 600, to: 2400, gain: 0.12 }),
+  // little "plip" when the buttons land
+  land: (ctx, out) => tone(ctx, out, { freq: 600, dur: 0.18, type: 'sine', gain: 0.3, slideTo: 1100 }),
 };
