@@ -346,8 +346,11 @@ animateInput.addEventListener('change', () => {
   settings.animate = animateInput.checked;
   saveSettings();
 });
-modeInputs.forEach((input) => input.addEventListener('change', () => {
-  if (input.checked) setMode(input.value);
+// Picking a game switches to it and closes settings. 'click' also fires when
+// the game that's already selected is tapped again, so that closes settings too.
+modeInputs.forEach((input) => input.addEventListener('click', () => {
+  if (input.value !== settings.mode) setMode(input.value);
+  setTimeout(() => dialog.close(), 150); // a moment to see the card light up
 }));
 shuffleInput.addEventListener('change', () => {
   settings.shuffle = shuffleInput.checked;
