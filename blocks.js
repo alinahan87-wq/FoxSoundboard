@@ -2,7 +2,7 @@
 /* exported BlocksGame */
 'use strict';
 
-// Building blocks: 8 squares, 4 long rectangles and 4 triangles with real
+// Building blocks: 10 squares, 6 long rectangles and 6 triangles with real
 // gravity (Matter.js does the physics). Most of them tumble in from the top at
 // the start. Drag them around with a finger and stack them up to build
 // things. Tipping the tablet tips the blocks, and a shake throws them all into
@@ -15,6 +15,7 @@ const BlocksGame = (() => {
   const BUMP_SPEED = 2.2;      // how hard a hit has to be to count as a bump
   const BUMP_COOLDOWN_MS = 350; // per block, so resting contacts don't chatter
   const MAX_SOUNDS_PER_S = 14;
+  const ON_FLOOR = 5;           // blocks that start on the floor; the rest drop in from above
   const BUMP_VOLUME = 0.25; // bumps and grabs play at a quarter of full volume
 
   const screen = document.getElementById('blocks-game');
@@ -95,16 +96,16 @@ const BlocksGame = (() => {
     if (blocks.length) Composite.remove(engine.world, blocks);
     removeLid();
     const kinds = [
-      ...Array(8).fill('square'),
-      ...Array(4).fill('rect'),
-      ...Array(4).fill('triangle'),
+      ...Array(10).fill('square'),
+      ...Array(6).fill('rect'),
+      ...Array(6).fill('triangle'),
     ].sort(() => Math.random() - 0.5);
     const s = unit();
     blocks = kinds.map((kind, i) => {
       // A few start on the floor; the rest fall in from above, one after another.
-      const onFloor = i < 4;
+      const onFloor = i < ON_FLOOR;
       const x = rnd(s * 1.2, W - s * 1.2);
-      const y = onFloor ? H - s * 0.6 : -s * (1 + (i - 4) * 1.4) - rnd(0, s);
+      const y = onFloor ? H - s * 0.6 : -s * (1 + (i - ON_FLOOR) * 1.4) - rnd(0, s);
       return makeBlock(kind, x, y);
     });
     Composite.add(engine.world, blocks);
