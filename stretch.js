@@ -1,4 +1,4 @@
-/* global audio, master, EFFECTS, PALETTE, settings */
+/* global audio, master, EFFECTS, PALETTE, settings, Celebrate */
 /* exported StretchGame */
 'use strict';
 
@@ -6,7 +6,9 @@
 // shape stays put, but its outline is like soft dough: grab near the edge and
 // pull to stretch it, and when you let go it keeps its new shape. Parts of the
 // outline push each other away instead of overlapping, so the outline never
-// crosses itself. Tapping inside the shape gives it a jiggle. No goal, just play.
+// crosses itself. Tapping inside the shape gives it a jiggle. Stretch it until
+// it fills (nearly) the whole screen and it pops, with bubbles, then a new
+// shape appears.
 
 const StretchGame = (() => {
   // The outline is a ring of "spokes" coming out of a fixed centre: each spoke
@@ -42,6 +44,10 @@ const StretchGame = (() => {
   let running = false;
   let frame = 0;
   let hum = null;
+  let celebrating = false;
+  let popStart = 0;  // when the winning pop began, for the burst-and-fade
+  let timers = [];
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
 
   const thick = () => Math.min(W, H) * 0.035;
   const TAU = Math.PI * 2;
@@ -215,6 +221,7 @@ const StretchGame = (() => {
 
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
+    if (celebrating) return;
     const p = point(e);
     const { i, dist } = spokeAt(p);
     const reach = Math.min(W, H) * 0.14;
@@ -331,6 +338,14 @@ const StretchGame = (() => {
 
   function draw() {
     g.clearRect(0, 0, W, H);
+    // after a win the shape bursts: it swells a little and fades away
+    const burst = celebrating ? Math.min(1, (performance.now() - popStart) / 450) : 0;
+    if (burst >= 1) return;
+    g.save();
+    g.globalAlpha = 1 - burst;
+    g.translate(cx, cy);
+    g.scale(1 + burst * 0.12, 1 + burst * 0.12);
+    g.translate(-cx, -cy);
     const pts = outlinePoints();
     // a smooth closed curve through the points (via midpoints)
     g.beginPath();
@@ -352,15 +367,47 @@ const StretchGame = (() => {
     g.lineJoin = 'round';
     g.strokeStyle = `hsl(${hsl.h.toFixed(1)}, 80%, 36%)`;
     g.stroke();
+    g.restore();
 
   }
 
   // ---- loop, sizing, start and stop ------------------------------------------------------
 
+  // ---- winning: fill the screen ------------------------------------------------------
+
+  const polyArea = (lens) => {
+    let a = 0;
+    for (let i = 0; i < N; i++) {
+      const j = (i + 1) % N;
+      a += lens[i] * lens[j] * Math.sin(angles[j] - angles[i] + (j === 0 ? Math.PI * 2 : 0));
+    }
+    return Math.abs(a) / 2;
+  };
+
+  // How much of the screen the shape covers, compared with the most it could.
+  function coverage() {
+    return polyArea(r) / polyArea(angles.map(maxLength));
+  }
+
+  function win() {
+    celebrating = true;
+    grabs.clear();
+    stopHum();
+    popStart = performance.now();
+    for (let k = 0; k < 6; k++) later(() => EFFECTS.pop(audio(), master), k * 70);
+    const fill = `hsl(${hsl.h.toFixed(1)}, 88%, 58%)`;
+    Celebrate.run([fill], () => {
+      celebrating = false;
+      newShape();
+    });
+  }
+
   function loop() {
     if (!running) return;
-    step();
+    if (!celebrating) step();
     updateHum();
+    const goal = { nearly: 0.9, most: 0.75 }[settings.stretchWin];
+    if (!celebrating && goal && coverage() >= goal) win();
     draw();
     frame = requestAnimationFrame(loop);
   }
@@ -400,6 +447,10 @@ const StretchGame = (() => {
   function stop() {
     running = false;
     cancelAnimationFrame(frame);
+    timers.forEach(clearTimeout);
+    timers = [];
+    Celebrate.stop();
+    celebrating = false;
     grabs.clear();
     stopHum();
     window.removeEventListener('resize', resize);
@@ -407,7 +458,7 @@ const StretchGame = (() => {
 
   // Grown-ups can swap in a new shape from settings.
   function reset() {
-    if (running) newShape();
+    if (running && !celebrating) newShape();
   }
 
   // A copy of the outline points (used by tests to check it never crosses itself).

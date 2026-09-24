@@ -122,7 +122,7 @@
           <input type="radio" name="mode" value="stretch">
           <span class="mode-art" aria-hidden="true">🟣</span>
           <b>Stretchy shape</b>
-          <small>Pull the edge to reshape it; it keeps its new shape (not in Circuit)</small>
+          <small>Pull the edge to reshape it; fill the screen for bubbles (not in Circuit)</small>
         </label>
       </div>
       </div>
@@ -153,6 +153,14 @@
             <option value="triangle">Triangle</option>
             <option value="star">Star</option>
             <option value="heart">Heart</option>
+          </select>
+        </label>
+        <label class="row">
+          <span>Pop with bubbles when it fills the screen</span>
+          <select id="stretch-win">
+            <option value="nearly">When it fills nearly all the screen</option>
+            <option value="most">When it fills most of the screen (easier)</option>
+            <option value="off">Never, just play</option>
           </select>
         </label>
         <label class="row">

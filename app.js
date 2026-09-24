@@ -11,7 +11,7 @@ const DEFAULTS = {
   scratchSpeak: true, scratchBrush: 'bigger',
   bounceFloaty: false, bounceHum: true,
   blocksRecolour: true,
-  stretchShape: 'random', stretchSound: true, stretchColour: true,
+  stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'nearly',
 };
 
 function loadSettings() {
@@ -358,6 +358,7 @@ const blocksRecolourInput = document.getElementById('blocks-recolour');
 const stretchShapeInput = document.getElementById('stretch-shape');
 const stretchSoundInput = document.getElementById('stretch-sound');
 const stretchColourInput = document.getElementById('stretch-colour');
+const stretchWinInput = document.getElementById('stretch-win');
 const bounceHumInput = document.getElementById('bounce-hum');
 const scratchBrushInput = document.getElementById('scratch-brush');
 const voiceTestButton = document.getElementById('voice-test');
@@ -393,6 +394,10 @@ stretchShapeInput.addEventListener('change', () => {
   settings.stretchShape = stretchShapeInput.value;
   saveSettings();
   StretchGame.reset();
+});
+stretchWinInput.addEventListener('change', () => {
+  settings.stretchWin = stretchWinInput.value;
+  saveSettings();
 });
 stretchColourInput.addEventListener('change', () => {
   settings.stretchColour = stretchColourInput.checked;
@@ -463,6 +468,7 @@ function openSettings() {
   stretchShapeInput.value = settings.stretchShape;
   stretchSoundInput.checked = settings.stretchSound;
   stretchColourInput.checked = settings.stretchColour;
+  stretchWinInput.value = settings.stretchWin;
   bounceHumInput.checked = settings.bounceHum;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';
