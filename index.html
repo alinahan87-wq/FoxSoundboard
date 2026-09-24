@@ -17,6 +17,9 @@
   <main id="colour-game" data-mode="colour" aria-label="Colour match" hidden>
     <div class="squares"></div>
   </main>
+  <main id="fox-game" data-mode="fox" aria-label="Spell FOX" hidden>
+    <div class="letters"></div>
+  </main>
   <div id="bubbles" aria-hidden="true"></div>
 
   <!-- Grown-up gate: must be held down for 2 seconds, so little fingers can't open it by accident -->
@@ -48,6 +51,12 @@
           <span class="mode-art" aria-hidden="true">🎨</span>
           <b>Colour match</b>
           <small>Tap squares until all 4 match</small>
+        </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="fox">
+          <span class="mode-art" aria-hidden="true">🦊</span>
+          <b>Spell FOX</b>
+          <small>Tap letters until they spell F-O-X</small>
         </label>
       </div>
 
@@ -92,7 +101,9 @@
   <input id="file-input" type="file" accept="audio/*,video/mp4,video/*" hidden>
 
   <script src="sounds.js"></script>
+  <script src="celebrate.js"></script>
   <script src="colour.js"></script>
+  <script src="fox.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

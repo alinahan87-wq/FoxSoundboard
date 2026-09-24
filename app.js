@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -281,6 +281,7 @@ async function shuffleBoard() {
 const GAMES = {
   soundboard: { start() { presses = 0; }, stop() {} },
   colour: ColourGame,
+  fox: FoxGame,
 };
 
 function setMode(mode) {

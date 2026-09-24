@@ -1,12 +1,14 @@
 // Caches the app so it opens instantly and works with no internet.
 // Bump VERSION whenever any of the files below change.
-const VERSION = 'v5';
+const VERSION = 'v6';
 const FILES = [
   './',
   'index.html',
   'style.css',
   'sounds.js',
+  'celebrate.js',
   'colour.js',
+  'fox.js',
   'app.js',
   'manifest.webmanifest',
   'icons/icon.svg',

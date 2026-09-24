@@ -349,6 +349,61 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
   75% { transform: translateY(-12px) rotate(4deg); }
 }
 
+/* ---------- spell FOX ---------- */
+
+#fox-game {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--gap);
+}
+
+.letters {
+  --depth: clamp(8px, 1.4vmin, 14px);
+  /* three tiles side by side, as big as the screen allows, a little taller than wide */
+  --tile: min(calc((100vw - var(--gap) * 4) / 3), calc((100vh - var(--gap) * 2 - var(--depth)) / 1.2));
+  display: flex;
+  gap: var(--gap);
+  padding-bottom: var(--depth);
+}
+
+.letter-tile {
+  width: var(--tile);
+  height: calc(var(--tile) * 1.2);
+  border: none;
+  border-radius: clamp(24px, 5vmin, 48px);
+  background: var(--c);
+  box-shadow: 0 var(--depth) 0 color-mix(in srgb, var(--c) 75%, black);
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  cursor: pointer;
+  transition: background-color 120ms ease-out, box-shadow 120ms ease-out;
+}
+
+.letter {
+  font-family: ui-rounded, "Arial Rounded MT Bold", "Nunito", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: calc(var(--tile) * 0.8);
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 calc(var(--tile) * 0.03) 0 rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.letter-tile.flip { animation: squish 260ms cubic-bezier(.3, 1.6, .5, 1); }
+.letter-tile.flip .letter { animation: letter-pop 320ms cubic-bezier(.3, 1.6, .5, 1); }
+
+@keyframes letter-pop {
+  0%   { transform: scale(0.4) rotate(-12deg); }
+  100% { transform: none; }
+}
+
+#fox-game.won .letter-tile { animation: cheer 700ms ease-in-out 2; }
+#fox-game.won .letter-tile:nth-child(2) { animation-delay: 120ms; }
+#fox-game.won .letter-tile:nth-child(3) { animation-delay: 240ms; }
+
 /* ---------- celebration bubbles ---------- */
 
 #bubbles {

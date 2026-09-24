@@ -1,7 +1,7 @@
 # Fox's Games
 
 A toddler games app (PWA) for an Android tablet, for an autistic toddler. Plain HTML/CSS/JS with no
-build step: `index.html`, `style.css`, `sounds.js`, `colour.js`, `app.js`, `sw.js`.
+build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `app.js`, `sw.js`.
 
 ## Adding a new game (mode)
 
@@ -24,6 +24,8 @@ Every game must follow this pattern:
 - Big touch targets, no words on the child's screen, respond on `pointerdown`.
 - Sounds are gentle and cheerful and go through `master` (volume and limiter). Use `EFFECTS`/`SYNTHS`
   in `sounds.js`.
+- Winning uses the shared `Celebrate.run(colours, onDone)` in `celebrate.js` (ta-da plus bubbles).
+  Call `Celebrate.stop()` in the game's `stop()`. Use `PALETTE` for colours.
 - Respect `prefers-reduced-motion` where there's big motion.
 
 ## Publishing
