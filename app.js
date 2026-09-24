@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, BlocksGame, StretchGame, Circuit */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, BlocksGame, StretchGame, PatternGame, Circuit */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -12,6 +12,7 @@ const DEFAULTS = {
   bounceFloaty: false, bounceHum: true,
   blocksRecolour: true,
   stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'full',
+  patternColourSpeed: 'slow',
 };
 
 function loadSettings() {
@@ -297,6 +298,7 @@ const GAMES = {
   bounce: BounceGame,
   blocks: BlocksGame,
   stretch: StretchGame,
+  pattern: PatternGame,
   circuit: Circuit,
 };
 
@@ -357,6 +359,7 @@ const scratchSpeakInput = document.getElementById('scratch-speak');
 const bounceFloatyInput = document.getElementById('bounce-floaty');
 const blocksRecolourInput = document.getElementById('blocks-recolour');
 const stretchShapeInput = document.getElementById('stretch-shape');
+const patternSpeedInput = document.getElementById('pattern-colour-speed');
 const stretchSoundInput = document.getElementById('stretch-sound');
 const stretchColourInput = document.getElementById('stretch-colour');
 const stretchWinInput = document.getElementById('stretch-win');
@@ -390,6 +393,14 @@ modeInputs.forEach((input) => input.addEventListener('click', () => {
 numbersRestartInput.addEventListener('change', () => {
   settings.numbersRestart = numbersRestartInput.checked;
   saveSettings();
+});
+patternSpeedInput.addEventListener('change', () => {
+  settings.patternColourSpeed = patternSpeedInput.value;
+  saveSettings();
+});
+document.getElementById('pattern-reset').addEventListener('click', () => {
+  dialog.close();
+  PatternGame.reset();
 });
 stretchShapeInput.addEventListener('change', () => {
   settings.stretchShape = stretchShapeInput.value;
@@ -467,6 +478,7 @@ function openSettings() {
   bounceFloatyInput.checked = settings.bounceFloaty;
   blocksRecolourInput.checked = settings.blocksRecolour;
   stretchShapeInput.value = settings.stretchShape;
+  patternSpeedInput.value = settings.patternColourSpeed;
   stretchSoundInput.checked = settings.stretchSound;
   stretchColourInput.checked = settings.stretchColour;
   stretchWinInput.value = settings.stretchWin;

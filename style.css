@@ -593,6 +593,21 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
   touch-action: none;
 }
 
+/* ---------- endless pattern ---------- */
+
+#pattern-game {
+  position: fixed;
+  inset: 0;
+}
+
+#pattern-game canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
 /* ---------- celebration bubbles ---------- */
 
 #bubbles {

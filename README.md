@@ -11,7 +11,7 @@ full-screen like a normal app, and it works with no internet.
 
 - **Big buttons, no words.** Just colours and pictures. Sound plays the instant a finger lands.
 - **Calm and predictable.** No pop-ups, no ads, no menus.
-- **Eight activities.** Soundboard; Colour match (tap the four squares until they're all the same colour, then bubbles!); Spell FOX (tap the three letters until they read F-O-X); Count to 10 (tap the scattered numbers in order); Scratch & reveal (scratch away a pattern to find an animal, whose name is then shown and spoken); Bouncy ball (tap to bounce it, hold to power it up for bigger, sparklier bounces); Building blocks (drag and stack blocks that fall with real gravity); and Stretchy shape (pull the outline of a big shape to reshape it; it keeps its new shape, and filling the screen pops it with bubbles). Switch between them from the grown-up game menu. **Circuit** plays the four goal games in turn, moving on after each win.
+- **Nine activities.** Soundboard; Colour match (tap the four squares until they're all the same colour, then bubbles!); Spell FOX (tap the three letters until they read F-O-X); Count to 10 (tap the scattered numbers in order); Scratch & reveal (scratch away a pattern to find an animal, whose name is then shown and spoken); Bouncy ball (tap to bounce it, hold to power it up for bigger, sparklier bounces); Building blocks (drag and stack blocks that fall with real gravity); and Stretchy shape (pull the outline of a big shape to reshape it; it keeps its new shape, and filling the screen pops it with bubbles); and Endless pattern (drag a colourful pattern in any direction; it never ends or repeats). Switch between them from the grown-up game menu. **Circuit** plays the four goal games in turn, moving on after each win.
 - **Surprise shuffle.** Every 10 taps the buttons tumble around and land in new spots (can be turned off in settings).
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
@@ -69,6 +69,7 @@ built-in sound back.
 | `bounce.js` | The Bouncy ball activity |
 | `blocks.js` | The Building blocks activity (physics by Matter.js in `vendor/`) |
 | `stretch.js` | The Stretchy shape activity |
+| `pattern.js` | The Endless pattern activity |
 | `circuit.js` | Circuit: plays the games one after another |
 | `sw.js` | Offline cache. **Bump `VERSION`** when you change any file |
 | `manifest.webmanifest`, `icons/` | What makes it installable as an app |

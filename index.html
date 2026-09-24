@@ -37,6 +37,9 @@
   <main id="stretch-game" data-mode="stretch" aria-label="Stretchy shape" hidden>
     <canvas aria-label="Pull the edge of the shape to stretch it"></canvas>
   </main>
+  <main id="pattern-game" data-mode="pattern" aria-label="Endless pattern" hidden>
+    <canvas aria-label="Drag to scroll the pattern in any direction"></canvas>
+  </main>
   <div id="bubbles" aria-hidden="true"></div>
 
   <!-- Grown-up gates: each must be held down for 2 seconds, so little fingers can't open them by accident.
@@ -124,6 +127,12 @@
           <b>Stretchy shape</b>
           <small>Pull the edge to reshape it; fill the screen for bubbles (not in Circuit)</small>
         </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="pattern">
+          <span class="mode-art" aria-hidden="true">🌈</span>
+          <b>Endless pattern</b>
+          <small>Drag to scroll a colourful pattern that never ends (not in Circuit)</small>
+        </label>
       </div>
       </div>
     </form>
@@ -141,6 +150,22 @@
         <span>Volume</span>
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
+
+      <section data-mode="pattern">
+        <h2>Endless pattern</h2>
+        <label class="row">
+          <span>How fast the colours change</span>
+          <select id="pattern-colour-speed">
+            <option value="slow">Slowly</option>
+            <option value="gentle">A bit quicker</option>
+            <option value="still">Don't change</option>
+          </select>
+        </label>
+        <div class="row">
+          <span>Start a brand-new pattern</span>
+          <span class="actions"><button type="button" id="pattern-reset">New pattern</button></span>
+        </div>
+      </section>
 
       <section data-mode="stretch">
         <h2>Stretchy shape</h2>
@@ -278,6 +303,7 @@
   <script src="vendor/matter.min.js"></script>
   <script src="blocks.js"></script>
   <script src="stretch.js"></script>
+  <script src="pattern.js"></script>
   <script src="circuit.js"></script>
   <script src="app.js"></script>
 </body>
