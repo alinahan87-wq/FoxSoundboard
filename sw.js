@@ -1,6 +1,6 @@
 // Caches the app so it opens instantly and works with no internet.
 // Bump VERSION whenever any of the files below change.
-const VERSION = 'v4';
+const VERSION = 'v5';
 const FILES = [
   './',
   'index.html',

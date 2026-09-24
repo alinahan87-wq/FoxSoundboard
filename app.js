@@ -285,6 +285,10 @@ function setMode(mode) {
   if (ctx) stopAll();
   board.hidden = mode !== 'soundboard';
   colourScreen.hidden = mode !== 'colour';
+  // Only show the grown-up settings that belong to this game.
+  document.querySelectorAll('#settings [data-mode]').forEach((section) => {
+    section.hidden = section.dataset.mode !== mode;
+  });
   if (mode === 'colour') ColourGame.start();
   else ColourGame.stop();
   presses = 0;
