@@ -1,7 +1,7 @@
 {
-  "name": "Fox Soundboard",
-  "short_name": "Sounds",
-  "description": "Big, bright buttons that play fun sounds.",
+  "name": "Fox's Games",
+  "short_name": "Fox's Games",
+  "description": "Big, bright games: a soundboard and colour match.",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",

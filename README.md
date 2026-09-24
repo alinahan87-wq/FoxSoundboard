@@ -1,4 +1,4 @@
-# 🦊 Fox Soundboard
+# 🦊 Fox's Games
 
 A simple, toddler-proof soundboard for an Android tablet: eight big, bright buttons
 that each play a fun sound. It's styled after the Duolingo "correct!", "lesson complete",
