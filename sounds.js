@@ -150,6 +150,16 @@ const EFFECTS = {
   sparkle: (ctx, out) => {
     [N.E6, N.G6, N.C7].forEach((f, i) => tone(ctx, out, { freq: f, start: 0.05 + i * 0.06, dur: 0.2, type: 'sine', gain: 0.18 }));
   },
+  // building blocks: a wooden marimba "tok" on a happy scale. Long blocks sound
+  // lower, triangles higher; harder bumps are louder.
+  marimba: (ctx, out, kind, strength) => {
+    const notes = [N.C5, N.D5, N.E5, N.G5, N.A5];
+    const octave = kind === 'rect' ? 0.5 : kind === 'triangle' ? 2 : 1;
+    const f = notes[Math.floor(Math.random() * notes.length)] * octave;
+    const gain = 0.12 + 0.35 * strength;
+    tone(ctx, out, { freq: f * 4, dur: 0.04, type: 'sine', gain: gain * 0.3 });
+    return tone(ctx, out, { freq: f, dur: 0.22 + 0.15 * strength, type: 'sine', gain });
+  },
   // bubble pop
   pop: (ctx, out) => tone(ctx, out, { freq: 700 + Math.random() * 500, dur: 0.08, type: 'sine', gain: 0.4, slideTo: 1800 }),
 };

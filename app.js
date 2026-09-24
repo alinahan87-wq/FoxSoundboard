@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, Circuit */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, BlocksGame, Circuit */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -10,6 +10,7 @@ const DEFAULTS = {
   numbersRestart: false, numbersHint: true,
   scratchSpeak: true, scratchBrush: 'bigger',
   bounceFloaty: false, bounceHum: true,
+  blocksRecolour: true,
 };
 
 function loadSettings() {
@@ -292,6 +293,7 @@ const GAMES = {
   numbers: NumbersGame,
   scratch: ScratchGame,
   bounce: BounceGame,
+  blocks: BlocksGame,
   circuit: Circuit,
 };
 
@@ -350,6 +352,7 @@ const numbersRestartInput = document.getElementById('numbers-restart');
 const numbersHintInput = document.getElementById('numbers-hint');
 const scratchSpeakInput = document.getElementById('scratch-speak');
 const bounceFloatyInput = document.getElementById('bounce-floaty');
+const blocksRecolourInput = document.getElementById('blocks-recolour');
 const bounceHumInput = document.getElementById('bounce-hum');
 const scratchBrushInput = document.getElementById('scratch-brush');
 const voiceTestButton = document.getElementById('voice-test');
@@ -380,6 +383,14 @@ modeInputs.forEach((input) => input.addEventListener('click', () => {
 numbersRestartInput.addEventListener('change', () => {
   settings.numbersRestart = numbersRestartInput.checked;
   saveSettings();
+});
+blocksRecolourInput.addEventListener('change', () => {
+  settings.blocksRecolour = blocksRecolourInput.checked;
+  saveSettings();
+});
+document.getElementById('blocks-reset').addEventListener('click', () => {
+  dialog.close();
+  BlocksGame.reset();
 });
 bounceFloatyInput.addEventListener('change', () => {
   settings.bounceFloaty = bounceFloatyInput.checked;
@@ -426,6 +437,7 @@ function openSettings() {
   numbersHintInput.checked = settings.numbersHint;
   scratchSpeakInput.checked = settings.scratchSpeak;
   bounceFloatyInput.checked = settings.bounceFloaty;
+  blocksRecolourInput.checked = settings.blocksRecolour;
   bounceHumInput.checked = settings.bounceHum;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';
