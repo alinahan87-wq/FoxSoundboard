@@ -82,7 +82,7 @@ const BounceGame = (() => {
     osc.frequency.setValueAtTime(180, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(620, ctx.currentTime + CHARGE_MS / 1000);
     gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.07, ctx.currentTime + 0.15);
+    gain.gain.exponentialRampToValueAtTime(0.035, ctx.currentTime + 0.15);
     osc.connect(gain).connect(master);
     osc.start();
     hum = { osc, gain };
@@ -133,8 +133,14 @@ const BounceGame = (() => {
     stopHum();
     // A quick tap gives a little hop; a full charge sends it flying.
     ball.energy = Math.max(ball.energy * 0.5, c);
-    ball.vy = -H * (0.9 + 2.6 * c);
-    ball.vx = rnd(-1, 1) * H * (0.25 + 1.1 * c);
+    // Launch angle, measured from straight up. A little hop goes nearly straight
+    // up; the more charge, the wider the possible angles, so a full charge can
+    // fly off almost sideways as well as high.
+    const speed = H * (0.9 + 2.6 * c);
+    const spread = (15 + 60 * c) * (Math.PI / 180); // 15° for a tap, up to 75° at full
+    const angle = rnd(-spread, spread);
+    ball.vx = Math.sin(angle) * speed * 1.2;
+    ball.vy = -Math.cos(angle) * speed;
     if (c > 0.3) EFFECTS.whoosh(audio(), master);
     if (c > 0.6) burst(ball.x, ball.y, Math.round(24 * c), 1.2);
   }
