@@ -1,7 +1,7 @@
 # Fox's Games
 
 A toddler games app (PWA) for an Android tablet, for an autistic toddler. Plain HTML/CSS/JS with no
-build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `app.js`, `sw.js`.
+build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `numbers.js`, `app.js`, `sw.js`.
 
 ## Adding a new game (mode)
 

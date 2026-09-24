@@ -134,6 +134,11 @@ const EFFECTS = {
     const scale = [N.C5, N.D5, N.E5, N.G5, N.A5, N.C6, N.D6];
     return bell(ctx, out, scale[step % scale.length], 0, 0.4, 0.35);
   },
+  // counting: ten notes climbing a cheerful scale, so 1 to 10 sounds like going up stairs
+  count: (ctx, out, step) => {
+    const scale = [N.C5, N.D5, N.E5, N.G5, N.A5, N.C6, N.D6, N.E6, N.G6, N.A6];
+    return bell(ctx, out, scale[Math.min(step, scale.length - 1)], 0, 0.4, 0.35);
+  },
   // bubble pop
   pop: (ctx, out) => tone(ctx, out, { freq: 700 + Math.random() * 500, dur: 0.08, type: 'sine', gain: 0.4, slideTo: 1800 }),
 };

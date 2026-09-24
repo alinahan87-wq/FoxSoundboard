@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -282,6 +282,7 @@ const GAMES = {
   soundboard: { start() { presses = 0; }, stop() {} },
   colour: ColourGame,
   fox: FoxGame,
+  numbers: NumbersGame,
 };
 
 function setMode(mode) {

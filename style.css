@@ -273,7 +273,7 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
 
 .modes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-top: 8px;
 }
@@ -403,6 +403,45 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
 #fox-game.won .letter-tile { animation: cheer 700ms ease-in-out 2; }
 #fox-game.won .letter-tile:nth-child(2) { animation-delay: 120ms; }
 #fox-game.won .letter-tile:nth-child(3) { animation-delay: 240ms; }
+
+/* ---------- count to 10 ---------- */
+
+#numbers-game {
+  position: fixed;
+  inset: 0;
+}
+
+.num {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  font-family: ui-rounded, "Arial Rounded MT Bold", "Nunito", system-ui, sans-serif;
+  font-weight: 900;
+  font-size: var(--fs);
+  line-height: 1;
+  color: var(--c);
+  -webkit-text-stroke: calc(var(--fs) * 0.05) #fff;
+  paint-order: stroke fill;
+  text-shadow: 0 calc(var(--fs) * 0.06) 0 color-mix(in srgb, var(--c) 60%, black);
+  rotate: var(--rot);
+  touch-action: none;
+  cursor: pointer;
+}
+
+.num.gone { visibility: hidden; pointer-events: none; }
+
+.num.nope { animation: nope 500ms ease-in-out; }
+
+@keyframes nope {
+  0%, 100% { transform: none; }
+  20% { transform: translateX(-10%) rotate(-6deg); }
+  40% { transform: translateX(10%) rotate(6deg); }
+  60% { transform: translateX(-6%) rotate(-3deg); }
+  80% { transform: translateX(6%) rotate(3deg); }
+}
 
 /* ---------- celebration bubbles ---------- */
 
