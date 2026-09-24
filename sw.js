@@ -1,6 +1,6 @@
 // Caches the app so it opens instantly and works with no internet.
 // Bump VERSION whenever any of the files below change.
-const VERSION = 'v11';
+const VERSION = 'v12';
 const FILES = [
   './',
   'index.html',
@@ -11,6 +11,7 @@ const FILES = [
   'fox.js',
   'numbers.js',
   'scratch.js',
+  'circuit.js',
   'app.js',
   'manifest.webmanifest',
   'icons/icon.svg',

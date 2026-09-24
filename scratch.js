@@ -1,4 +1,4 @@
-/* global audio, master, EFFECTS, SYNTHS, PALETTE, settings, say */
+/* global audio, master, EFFECTS, SYNTHS, PALETTE, settings, say, Celebrate */
 /* exported ScratchGame */
 'use strict';
 
@@ -35,6 +35,7 @@ const ScratchGame = (() => {
   let current = -1;
   let timers = [];
   let lastScratchSound = 0;
+  let onDone = null; // set by the circuit: bubbles, then called instead of a new round
   const fingers = new Map(); // pointerId -> last point, so several fingers can scratch at once
 
   const rand = (n) => Math.floor(Math.random() * n);
@@ -249,14 +250,16 @@ const ScratchGame = (() => {
     canvas.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 400, easing: 'ease-out' });
     later(() => { canvas.style.opacity = '0'; }, 390);
     later(() => {
-      SYNTHS.complete(audio(), master);
       animalEl.classList.add('happy');
+      // In a circuit every game ends with the bubbles before moving on.
+      if (onDone) Celebrate.run(PALETTE.map((p) => p.hex), onDone);
+      else SYNTHS.complete(audio(), master);
     }, 300);
     later(() => {
       nameEl.classList.add('show');
       speak(ANIMALS[current][1]);
     }, 1100);
-    later(newRound, ROUND_MS);
+    if (!onDone) later(newRound, ROUND_MS);
   }
 
   function onResize() {
@@ -269,8 +272,9 @@ const ScratchGame = (() => {
     clearedCount = 0;
   }
 
-  function start() {
+  function start(opts = {}) {
     stop();
+    onDone = opts.onDone || null;
     newRound();
     window.addEventListener('resize', onResize);
   }
@@ -279,6 +283,7 @@ const ScratchGame = (() => {
     timers.forEach(clearTimeout);
     timers = [];
     fingers.clear();
+    Celebrate.stop();
     say.stop();
     window.removeEventListener('resize', onResize);
   }

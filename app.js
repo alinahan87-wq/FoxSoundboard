@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, Circuit */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -281,13 +281,16 @@ async function shuffleBoard() {
 
 // Every game registers here with start/stop hooks. Anything in the page marked
 // data-mode="<game>" (its screen and its grown-up settings section) is only
-// shown while that game is selected.
+// shown while that game is selected. data-mode can list several games, e.g. a
+// settings section marked data-mode="numbers circuit" shows for both. The
+// circuit shows its games' screens itself.
 const GAMES = {
   soundboard: { start() { presses = 0; }, stop() {} },
   colour: ColourGame,
   fox: FoxGame,
   numbers: NumbersGame,
   scratch: ScratchGame,
+  circuit: Circuit,
 };
 
 function setMode(mode) {
@@ -297,7 +300,7 @@ function setMode(mode) {
   if (ctx) stopAll();
   for (const [name, game] of Object.entries(GAMES)) if (name !== mode) game.stop();
   document.querySelectorAll('[data-mode]').forEach((el) => {
-    el.hidden = el.dataset.mode !== mode;
+    el.hidden = !el.dataset.mode.split(' ').includes(mode);
   });
   GAMES[mode].start();
 }

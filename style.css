@@ -282,9 +282,15 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
 
 .modes {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   margin-top: 8px;
+}
+
+.modes-divider {
+  border: none;
+  border-top: 2px solid var(--line);
+  margin: 14px 0 6px;
 }
 
 .mode-card {

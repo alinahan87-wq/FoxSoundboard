@@ -15,6 +15,7 @@ const ColourGame = (() => {
   let squares = [];
   let values = [];
   let celebrating = false;
+  let onDone = null; // set by the circuit: called after a win instead of a new round
 
   const rand = (n) => Math.floor(Math.random() * n);
 
@@ -69,12 +70,14 @@ const ColourGame = (() => {
     screen.classList.add('won');
     Celebrate.run([COLOURS[values[0]].hex], () => {
       screen.classList.remove('won');
-      randomise();
       celebrating = false;
+      if (onDone) onDone();
+      else randomise();
     });
   }
 
-  function start() {
+  function start(opts = {}) {
+    onDone = opts.onDone || null;
     if (!squares.length) build();
     randomise();
   }

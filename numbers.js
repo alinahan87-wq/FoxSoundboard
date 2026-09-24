@@ -18,6 +18,7 @@ const NumbersGame = (() => {
   let busy = false;  // ignore taps while numbers move or during the celebration
   let timers = [];
   let hintTimer = null;
+  let onDone = null; // set by the circuit: called after a win instead of a new round
 
   const rand = (n) => Math.floor(Math.random() * n);
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
@@ -157,6 +158,10 @@ const NumbersGame = (() => {
       if (next > COUNT) {
         busy = true;
         later(() => Celebrate.run(PALETTE.map((p) => p.hex), () => {
+          if (onDone) {
+            onDone();
+            return;
+          }
           newRound();
           later(ready, 700);
         }), 250);
@@ -188,9 +193,10 @@ const NumbersGame = (() => {
     if (!screen.hidden && !busy) layout();
   }
 
-  function start() {
+  function start(opts = {}) {
     if (!nums.length) build();
     stop();
+    onDone = opts.onDone || null;
     newRound();
     busy = true;
     later(ready, 700);

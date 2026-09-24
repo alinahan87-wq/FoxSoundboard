@@ -47,13 +47,23 @@
       </header>
 
       <h2>Activity</h2>
-      <div class="modes" role="radiogroup" aria-label="Activity">
+      <div role="radiogroup" aria-label="Activity">
+      <div class="modes">
         <label class="mode-card">
           <input type="radio" name="mode" value="soundboard">
           <span class="mode-art" aria-hidden="true">🔊</span>
           <b>Soundboard</b>
           <small>8 buttons that play sounds</small>
         </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="circuit">
+          <span class="mode-art" aria-hidden="true">🔁</span>
+          <b>Circuit</b>
+          <small>Plays each game in turn, moving on after every win</small>
+        </label>
+      </div>
+      <hr class="modes-divider">
+      <div class="modes">
         <label class="mode-card">
           <input type="radio" name="mode" value="colour">
           <span class="mode-art" aria-hidden="true">🎨</span>
@@ -79,6 +89,7 @@
           <small>Scratch away the pattern to find an animal</small>
         </label>
       </div>
+      </div>
 
       <h2>All games</h2>
       <label class="row">
@@ -86,7 +97,7 @@
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
 
-      <section data-mode="scratch">
+      <section data-mode="scratch circuit">
         <h2>Scratch &amp; reveal</h2>
         <label class="row">
           <span>Say the animal's name out loud</span>
@@ -107,7 +118,7 @@
         </label>
       </section>
 
-      <section data-mode="numbers">
+      <section data-mode="numbers circuit">
         <h2>Count to 10</h2>
         <label class="row">
           <span>A wrong number starts the count over from 1</span>
@@ -159,6 +170,7 @@
   <script src="fox.js"></script>
   <script src="numbers.js"></script>
   <script src="scratch.js"></script>
+  <script src="circuit.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

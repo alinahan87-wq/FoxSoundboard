@@ -20,6 +20,7 @@ const FoxGame = (() => {
   let tiles = [];
   let values = [];
   let celebrating = false;
+  let onDone = null; // set by the circuit: called after a win instead of a new round
 
   const rand = (n) => Math.floor(Math.random() * n);
   const spelled = () => values.every((v, i) => v === WORD[i]);
@@ -77,12 +78,14 @@ const FoxGame = (() => {
     screen.classList.add('won');
     Celebrate.run(LETTERS.map((l) => l.hex), () => {
       screen.classList.remove('won');
-      randomise();
       celebrating = false;
+      if (onDone) onDone();
+      else randomise();
     });
   }
 
-  function start() {
+  function start(opts = {}) {
+    onDone = opts.onDone || null;
     if (!tiles.length) build();
     randomise();
   }
