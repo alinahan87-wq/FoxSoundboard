@@ -35,9 +35,10 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      // clear this copy's older caches, plus old-style ones named just "v12" etc.
+      // Only clear this copy's own older caches. (Old-style caches named just
+      // "v12" etc. may belong to the other copy, so they're left alone.)
       .then((keys) => Promise.all(keys
-        .filter((k) => (k.startsWith(PREFIX) && k !== CACHE) || /^v\d+$/.test(k))
+        .filter((k) => k.startsWith(PREFIX) && k !== CACHE)
         .map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
