@@ -1,19 +1,23 @@
-/* global audio, master, EFFECTS, SYNTHS, Celebrate, PALETTE */
+/* global audio, master, EFFECTS, SYNTHS, Celebrate, PALETTE, settings */
 /* exported NumbersGame */
 'use strict';
 
 // Count to 10: the numbers 1-10 are scattered over the screen in different
 // colours and sizes. Tapping the next number in order plays a note and clears
-// it. Tapping the wrong one brings every number back in a new spot to start
-// again. Clearing all ten celebrates.
+// it. Tapping the wrong one gives a gentle wobble (or, if a grown-up turns it
+// on, brings every number back to start again). If he gets stuck, the number
+// he needs starts to pulse. Clearing all ten celebrates.
 
 const NumbersGame = (() => {
   const COUNT = 10;
+  const HINT_MS = 5000;          // pulse the next number after this long without progress
+  const HINT_AFTER_WRONG_MS = 1500;
   const screen = document.getElementById('numbers-game');
   let nums = [];     // nums[i] is the button for number i + 1
   let next = 1;      // the number he needs to tap next
   let busy = false;  // ignore taps while numbers move or during the celebration
   let timers = [];
+  let hintTimer = null;
 
   const rand = (n) => Math.floor(Math.random() * n);
   const later = (fn, ms) => timers.push(setTimeout(fn, ms));
@@ -25,6 +29,20 @@ const NumbersGame = (() => {
       [out[i], out[j]] = [out[j], out[i]];
     }
     return out;
+  }
+
+  function clearHint() {
+    clearTimeout(hintTimer);
+    nums.forEach((el) => el.classList.remove('hint'));
+  }
+
+  // Pulse the number he needs next, after `ms` of no progress.
+  function scheduleHint(ms) {
+    clearHint();
+    if (!settings.numbersHint) return;
+    hintTimer = setTimeout(() => {
+      if (!busy && next <= COUNT) nums[next - 1].classList.add('hint');
+    }, ms);
   }
 
   function build() {
@@ -119,11 +137,15 @@ const NumbersGame = (() => {
         { transform: 'none' },
       ], { duration: 600, easing: 'cubic-bezier(.3, 1.2, .5, 1)' });
     });
-    later(() => { busy = false; }, 900);
+    later(() => {
+      busy = false;
+      scheduleHint(HINT_MS);
+    }, 900);
   }
 
   function tap(n, el) {
     if (busy || el.classList.contains('gone')) return;
+    clearHint();
     if (n === next) {
       EFFECTS.count(audio(), master, n - 1);
       el.animate([
@@ -136,18 +158,30 @@ const NumbersGame = (() => {
         busy = true;
         later(() => Celebrate.run(PALETTE.map((p) => p.hex), () => {
           newRound();
-          later(() => { busy = false; }, 700);
+          later(ready, 700);
         }), 250);
+      } else {
+        scheduleHint(HINT_MS);
       }
       return;
     }
-    // Wrong number: a gentle "oops", a little wobble, then everything comes back.
-    busy = true;
+    // Wrong number: a gentle "oops" and a little wobble. He carries on from
+    // where he was, unless a grown-up has turned on starting over.
     SYNTHS.wrong(audio(), master);
     el.classList.remove('nope');
     void el.offsetWidth; // restart the animation
     el.classList.add('nope');
-    later(reshuffle, 650);
+    if (settings.numbersRestart) {
+      busy = true;
+      later(reshuffle, 650);
+    } else {
+      scheduleHint(HINT_AFTER_WRONG_MS);
+    }
+  }
+
+  function ready() {
+    busy = false;
+    scheduleHint(HINT_MS);
   }
 
   function onResize() {
@@ -158,14 +192,15 @@ const NumbersGame = (() => {
     if (!nums.length) build();
     stop();
     newRound();
-    later(() => { busy = false; }, 700);
     busy = true;
+    later(ready, 700);
     window.addEventListener('resize', onResize);
   }
 
   function stop() {
     timers.forEach(clearTimeout);
     timers = [];
+    clearHint();
     Celebrate.stop();
     busy = false;
     window.removeEventListener('resize', onResize);

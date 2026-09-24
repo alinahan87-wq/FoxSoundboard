@@ -433,6 +433,14 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
 
 .num.gone { visibility: hidden; pointer-events: none; }
 
+/* hint: the number he needs next gently grows and glows */
+.num.hint { animation: hint 1.1s ease-in-out infinite; }
+
+@keyframes hint {
+  0%, 100% { transform: none; filter: none; }
+  50% { transform: scale(1.25); filter: drop-shadow(0 0 calc(var(--fs) * 0.15) color-mix(in srgb, var(--c) 70%, #fff)); }
+}
+
 .num.nope { animation: nope 500ms ease-in-out; }
 
 @keyframes nope {

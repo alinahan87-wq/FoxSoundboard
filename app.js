@@ -5,7 +5,10 @@
 // Settings (small per-device preferences)
 // ---------------------------------------------------------------------------
 
-const DEFAULTS = { mode: 'soundboard', volume: 0.8, overlap: false, animate: true, shuffle: true };
+const DEFAULTS = {
+  mode: 'soundboard', volume: 0.8, overlap: false, animate: true, shuffle: true,
+  numbersRestart: false, numbersHint: true,
+};
 
 function loadSettings() {
   try {
@@ -330,6 +333,8 @@ const overlapInput = document.getElementById('overlap');
 const animateInput = document.getElementById('animate');
 const shuffleInput = document.getElementById('shuffle');
 const modeInputs = document.querySelectorAll('input[name="mode"]');
+const numbersRestartInput = document.getElementById('numbers-restart');
+const numbersHintInput = document.getElementById('numbers-hint');
 const soundList = document.getElementById('sound-list');
 const fileInput = document.getElementById('file-input');
 let pickingFor = null;
@@ -353,6 +358,14 @@ modeInputs.forEach((input) => input.addEventListener('click', () => {
   if (input.value !== settings.mode) setMode(input.value);
   setTimeout(() => dialog.close(), 150); // a moment to see the card light up
 }));
+numbersRestartInput.addEventListener('change', () => {
+  settings.numbersRestart = numbersRestartInput.checked;
+  saveSettings();
+});
+numbersHintInput.addEventListener('change', () => {
+  settings.numbersHint = numbersHintInput.checked;
+  saveSettings();
+});
 shuffleInput.addEventListener('change', () => {
   settings.shuffle = shuffleInput.checked;
   presses = 0;
@@ -364,6 +377,8 @@ function openSettings() {
   overlapInput.checked = settings.overlap;
   animateInput.checked = settings.animate;
   shuffleInput.checked = settings.shuffle;
+  numbersRestartInput.checked = settings.numbersRestart;
+  numbersHintInput.checked = settings.numbersHint;
   modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
   renderSoundList();
   dialog.showModal();
