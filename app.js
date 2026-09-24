@@ -275,23 +275,24 @@ async function shuffleBoard() {
 // Modes: which activity is on screen. Only changeable from grown-up settings.
 // ---------------------------------------------------------------------------
 
-const MODES = ['soundboard', 'colour'];
-const colourScreen = document.getElementById('colour-game');
+// Every game registers here with start/stop hooks. Anything in the page marked
+// data-mode="<game>" (its screen and its grown-up settings section) is only
+// shown while that game is selected.
+const GAMES = {
+  soundboard: { start() { presses = 0; }, stop() {} },
+  colour: ColourGame,
+};
 
 function setMode(mode) {
-  if (!MODES.includes(mode)) mode = DEFAULTS.mode;
+  if (!GAMES[mode]) mode = DEFAULTS.mode;
   settings.mode = mode;
   saveSettings();
   if (ctx) stopAll();
-  board.hidden = mode !== 'soundboard';
-  colourScreen.hidden = mode !== 'colour';
-  // Only show the grown-up settings that belong to this game.
-  document.querySelectorAll('#settings [data-mode]').forEach((section) => {
-    section.hidden = section.dataset.mode !== mode;
+  for (const [name, game] of Object.entries(GAMES)) if (name !== mode) game.stop();
+  document.querySelectorAll('[data-mode]').forEach((el) => {
+    el.hidden = el.dataset.mode !== mode;
   });
-  if (mode === 'colour') ColourGame.start();
-  else ColourGame.stop();
-  presses = 0;
+  GAMES[mode].start();
 }
 
 // ---------------------------------------------------------------------------
