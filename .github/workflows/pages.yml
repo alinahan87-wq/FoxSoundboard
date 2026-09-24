@@ -1,6 +1,11 @@
 name: Deploy to GitHub Pages
 
-# Publishing to the tablet is manual: Actions tab -> Deploy to GitHub Pages -> Run workflow.
+# Manual only: Actions tab -> Deploy to GitHub Pages -> Run workflow.
+#
+# The site has two copies of the app:
+#   /FoxSoundboard/          the tablet app, pinned to the commit in tablet-version.txt
+#   /FoxSoundboard/preview/  the latest version on this branch, for trying out on a phone
+# To update the tablet, put the new commit in tablet-version.txt and run this again.
 on:
   workflow_dispatch:
 
@@ -21,9 +26,31 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build the site (tablet app + phone preview)
+        run: |
+          set -euo pipefail
+          TABLET_REF=$(tr -d '[:space:]' < tablet-version.txt)
+          mkdir -p _site/preview
+          git archive "$TABLET_REF" | tar -x -C _site
+          git archive HEAD | tar -x -C _site/preview
+          rm -rf _site/.github _site/preview/.github
+          # The preview installs as its own app, so it can sit next to the real one.
+          node -e "
+            const fs = require('fs');
+            const f = '_site/preview/manifest.webmanifest';
+            const m = JSON.parse(fs.readFileSync(f, 'utf8'));
+            m.name = m.name + ' (preview)';
+            m.short_name = 'Fox preview';
+            m.id = './';
+            fs.writeFileSync(f, JSON.stringify(m, null, 2));
+          "
+          echo "Tablet app: $TABLET_REF"
+          echo "Preview:    $(git rev-parse HEAD)"
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
       - id: deployment
         uses: actions/deploy-pages@v4

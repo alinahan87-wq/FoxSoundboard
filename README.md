@@ -26,8 +26,11 @@ full-screen like a normal app, and it works with no internet.
 1. **Publish it (one-time):** in this GitHub repo go to **Settings → Pages**, and under
    *Build and deployment* set **Source** to **GitHub Actions**. Then go to the **Actions**
    tab → **Deploy to GitHub Pages** → **Run workflow**. That publishes the app to
-   `https://<your-username>.github.io/FoxSoundboard/`. Run it again whenever you want
-   the tablet to get the latest changes.
+   `https://<your-username>.github.io/FoxSoundboard/`.
+   The tablet copy is pinned to the commit in `tablet-version.txt`; put a newer commit there
+   and run the workflow again to update the tablet. The newest version is always at
+   `…/FoxSoundboard/preview/`, which installs as a separate "Fox preview" app for trying
+   things out on a phone.
 2. On the tablet, open that link in **Chrome**.
 3. Tap **⋮ → Add to Home screen → Install**.
 4. Open it from the new home-screen icon. It runs full-screen.

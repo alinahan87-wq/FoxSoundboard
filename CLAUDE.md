@@ -40,6 +40,11 @@ Every game must follow this pattern:
 
 - **Phone preview (for testing):** a claude.ai artifact built by bundling everything into one HTML
   file. It has no service worker, and `alert()` doesn't show there.
-- **Tablet:** GitHub Pages, deployed **manually only** (Actions → Deploy to GitHub Pages →
-  Run workflow). Don't publish to the tablet unless the user asks. New work goes to the phone
-  preview first.
+- **Installable phone preview:** `https://alinahan87-wq.github.io/FoxSoundboard/preview/` is the
+  latest commit on the branch, installed on the user's phone as "Fox preview". It updates whenever
+  the Pages workflow runs.
+- **Tablet:** `https://alinahan87-wq.github.io/FoxSoundboard/` is pinned to the commit in
+  `tablet-version.txt`. The Pages workflow is **manual only** (Actions → Deploy to GitHub Pages →
+  Run workflow) and publishes both. Running it only updates the tablet if `tablet-version.txt`
+  changed, so it's safe to run for the preview. Don't change `tablet-version.txt` unless the user
+  asks to update the tablet. New work goes to the phone previews first.
