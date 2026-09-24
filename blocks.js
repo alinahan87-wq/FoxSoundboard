@@ -5,7 +5,8 @@
 // Building blocks: 8 squares, 4 long rectangles and 4 triangles with real
 // gravity (Matter.js does the physics). Most of them tumble in from the top at
 // the start. Drag them around with a finger and stack them up to build
-// things. A good bump makes a marimba note and changes the block's colour.
+// things. Tipping the tablet tips the blocks, and a shake throws them all into
+// the air. A good bump makes a marimba note and changes the block's colour.
 // No goal, just play.
 
 const BlocksGame = (() => {
@@ -23,6 +24,7 @@ const BlocksGame = (() => {
 
   let engine = null;
   let walls = [];
+  let lid = null; // the ceiling at the top of the screen, added once every block has dropped in
   let blocks = [];
   const drags = new Map(); // pointerId -> constraint, so several fingers can drag at once
   let W = 0;
@@ -44,11 +46,28 @@ const BlocksGame = (() => {
     const opts = { isStatic: true, friction: 1, label: 'wall' };
     walls = [
       Bodies.rectangle(W / 2, H + t / 2, W + t * 2, t, opts),          // floor
-      Bodies.rectangle(-t / 2, H / 2 - H, t, H * 4, opts),             // left
-      Bodies.rectangle(W + t / 2, H / 2 - H, t, H * 4, opts),          // right
-      Bodies.rectangle(W / 2, -H * 1.5 - t / 2, W + t * 2, t, opts),   // a lid well above the screen
+      // side walls reach far up, so blocks dropping in from above stay inside them
+      Bodies.rectangle(-t / 2, -H * 3, t, H * 8 + t, opts),            // left
+      Bodies.rectangle(W + t / 2, -H * 3, t, H * 8 + t, opts),         // right
+      // a lid far above the screen (well clear of where blocks start), used while they drop in
+      Bodies.rectangle(W / 2, -H * 6 - t / 2, W + t * 2, t, opts),
     ];
     Composite.add(engine.world, walls);
+    removeLid();
+  }
+
+  // Once every block is on screen, close the top so tipping the tablet upside
+  // down or a big shake can't send blocks up out of sight.
+  function addLidWhenReady() {
+    if (lid || !blocks.length || blocks.some((b) => b.bounds.min.y < 2)) return;
+    const t = 400;
+    lid = Bodies.rectangle(W / 2, -t / 2, W + t * 2, t, { isStatic: true, friction: 1, label: 'wall' });
+    Composite.add(engine.world, lid);
+  }
+
+  function removeLid() {
+    if (lid) Composite.remove(engine.world, lid);
+    lid = null;
   }
 
   function makeBlock(kind, x, y) {
@@ -74,6 +93,7 @@ const BlocksGame = (() => {
 
   function dropBlocks() {
     if (blocks.length) Composite.remove(engine.world, blocks);
+    removeLid();
     const kinds = [
       ...Array(8).fill('square'),
       ...Array(4).fill('rect'),
@@ -127,42 +147,181 @@ const BlocksGame = (() => {
 
   // ---- dragging --------------------------------------------------------------
 
+  // How far outside a block a touch can land and still grab it. Fingers are
+  // big and phone screens are small, so this is generous.
+  const grabReach = () => Math.max(26, unit() * 0.45);
+
   function point(e) {
     const rect = canvas.getBoundingClientRect();
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
+  // The closest point on a block's outline to p, and how far away it is.
+  function closestOnBlock(body, p) {
+    const v = body.vertices;
+    let best = null;
+    for (let i = 0; i < v.length; i++) {
+      const a = v[i];
+      const b = v[(i + 1) % v.length];
+      const ex = b.x - a.x;
+      const ey = b.y - a.y;
+      const t = Math.max(0, Math.min(1, ((p.x - a.x) * ex + (p.y - a.y) * ey) / (ex * ex + ey * ey || 1)));
+      const q = { x: a.x + ex * t, y: a.y + ey * t };
+      const d = Math.hypot(p.x - q.x, p.y - q.y);
+      if (!best || d < best.d) best = { q, d };
+    }
+    return best;
+  }
+
+  const isHeld = (b) => [...drags.values()].some((list) => list.some((c) => c.bodyB === b));
+
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
     const p = point(e);
-    const hit = Query.point(blocks, p).find((b) => ![...drags.values()].some((c) => c.bodyB === b));
-    if (!hit) return;
-    canvas.setPointerCapture(e.pointerId);
-    Sleeping.set(hit, false);
-    // Hold the block where the finger touched it, so it can swing and tilt naturally.
-    const local = Matter.Vector.rotate(Matter.Vector.sub(p, hit.position), -hit.angle);
-    const c = Constraint.create({ pointA: p, bodyB: hit, pointB: Matter.Vector.rotate(local, hit.angle), stiffness: 0.25, damping: 0.1, length: 0 });
-    c.localPoint = local;
-    Composite.add(engine.world, c);
-    drags.set(e.pointerId, c);
-    EFFECTS.marimba(audio(), master, hit.kind, 0.25, BUMP_VOLUME); // grabbing is quiet too
+    const free = blocks.filter((b) => !isHeld(b));
+    // A touch right on a block grabs just that block. A touch in a gap grabs
+    // whatever is within reach: often one block, sometimes a few together.
+    let picks = Query.point(free, p).slice(0, 1).map((b) => ({ body: b, at: p }));
+    if (!picks.length) {
+      picks = free
+        .map((b) => ({ body: b, ...closestOnBlock(b, p) }))
+        .filter((x) => x.d <= grabReach())
+        .sort((x, y) => x.d - y.d)
+        .slice(0, 2) // at most the two nearest, so a touch never scoops up a whole pile
+        .map((x) => ({ body: x.body, at: x.q }));
+    }
+    if (!picks.length) return;
+    try { canvas.setPointerCapture(e.pointerId); } catch { /* keep going without capture */ }
+    const list = picks.map(({ body, at }) => {
+      Sleeping.set(body, false);
+      // Hold each block where it was touched (or its nearest edge), and keep it
+      // the same distance from the finger as it started, so several blocks move
+      // together without being pulled into each other.
+      const local = Matter.Vector.rotate(Matter.Vector.sub(at, body.position), -body.angle);
+      const c = Constraint.create({ pointA: { ...at }, bodyB: body, pointB: Matter.Vector.rotate(local, body.angle), stiffness: 0.25, damping: 0.1, length: 0 });
+      c.localPoint = local;
+      c.offset = Matter.Vector.sub(at, p);
+      Composite.add(engine.world, c);
+      return c;
+    });
+    drags.set(e.pointerId, list);
+    EFFECTS.marimba(audio(), master, picks[0].body.kind, 0.25, BUMP_VOLUME); // grabbing is quiet too
   });
 
   canvas.addEventListener('pointermove', (e) => {
-    const c = drags.get(e.pointerId);
-    if (!c) return;
-    c.pointA = point(e);
-    Sleeping.set(c.bodyB, false);
+    const list = drags.get(e.pointerId);
+    if (!list) return;
+    const p = point(e);
+    for (const c of list) {
+      c.pointA = Matter.Vector.add(p, c.offset);
+      Sleeping.set(c.bodyB, false);
+    }
   });
 
   function release(e) {
-    const c = drags.get(e.pointerId);
-    if (!c) return;
-    Composite.remove(engine.world, c);
+    const list = drags.get(e.pointerId);
+    if (!list) return;
+    for (const c of list) Composite.remove(engine.world, c);
     drags.delete(e.pointerId);
   }
   canvas.addEventListener('pointerup', release);
   canvas.addEventListener('pointercancel', release);
+
+  // ---- tilting and shaking the tablet ----------------------------------------------
+
+  // Gravity follows the way the tablet is tipped. Held upright, "down" is
+  // whichever edge is lowest; lying flat on a table, down stays towards the
+  // bottom of the screen and tipping it leans the blocks sideways.
+  let tilt = { x: 0, y: 1 };  // smoothed gravity direction, in screen terms
+  let lastShake = 0;
+  let lastAcc = null;
+
+  function screenGravity(acc) {
+    // The sensor measures in the device's own frame; turn that into screen
+    // directions for however the screen is currently rotated.
+    const gx = -acc.x / 9.81;
+    const gy = acc.y / 9.81;
+    const angle = ((screen.orientation && screen.orientation.angle) || window.orientation || 0) * (Math.PI / 180);
+    const c = Math.cos(-angle);
+    const s = Math.sin(-angle);
+    return { x: gx * c - gy * s, y: gx * s + gy * c };
+  }
+
+  function onMotion(e) {
+    if (!running) return;
+    const acc = e.accelerationIncludingGravity;
+    if (settings.blocksTilt && acc && acc.x != null) {
+      const t = screenGravity(acc);
+      const m = Math.hypot(t.x, t.y);
+      // flat: down the screen, leaning sideways with the tilt
+      let fx = t.x * 2;
+      let fy = 1;
+      const fl = Math.hypot(fx, fy);
+      fx /= fl;
+      fy /= fl;
+      // upright: true gravity
+      const ux = m > 1e-3 ? t.x / m : 0;
+      const uy = m > 1e-3 ? t.y / m : 1;
+      const w = Math.min(1, Math.max(0, (m - 0.3) / 0.3));
+      const target = { x: fx + (ux - fx) * w, y: fy + (uy - fy) * w };
+      tilt.x += (target.x - tilt.x) * 0.2;
+      tilt.y += (target.y - tilt.y) * 0.2;
+      const tl = Math.hypot(tilt.x, tilt.y) || 1;
+      setGravity(tilt.x / tl, tilt.y / tl);
+    }
+    // How hard the tablet was jolted: from the sensor's motion reading if it
+    // has one, otherwise from how suddenly the tilt reading jumped.
+    const lin = e.acceleration;
+    let jolt = 0;
+    if (lin && lin.x != null) {
+      jolt = Math.hypot(lin.x, lin.y, lin.z || 0);
+    } else if (acc && acc.x != null) {
+      if (lastAcc) jolt = Math.hypot(acc.x - lastAcc.x, acc.y - lastAcc.y, (acc.z || 0) - (lastAcc.z || 0));
+      lastAcc = { x: acc.x, y: acc.y, z: acc.z };
+    }
+    if (settings.blocksShake && jolt) {
+      const now = performance.now();
+      if (jolt > 14 && now - lastShake > 700) {
+        lastShake = now;
+        shake(Math.min(1, (jolt - 14) / 20 + 0.5));
+      }
+    }
+  }
+
+  function setGravity(x, y) {
+    if (!engine) return;
+    const moved = Math.abs(engine.gravity.x - x) + Math.abs(engine.gravity.y - y) > 0.08;
+    engine.gravity.x = x;
+    engine.gravity.y = y;
+    // sleeping blocks don't notice gravity changing, so wake them when it does
+    if (moved) for (const b of blocks) Sleeping.set(b, false);
+  }
+
+  // Throw every block up into the air.
+  function shake(strength) {
+    const s = unit() * 0.18 * strength;
+    for (const b of blocks) {
+      Sleeping.set(b, false);
+      Body.setVelocity(b, { x: b.velocity.x + (Math.random() - 0.5) * s, y: b.velocity.y - s * (0.6 + Math.random() * 0.6) });
+      Body.setAngularVelocity(b, b.angularVelocity + (Math.random() - 0.5) * 0.3 * strength);
+    }
+    EFFECTS.whoosh(audio(), master);
+  }
+
+  // While blocks are on screen, try to stop the screen itself from rotating
+  // when the tablet is tipped. (Only works in the installed, full-screen app.)
+  function lockRotation() {
+    try {
+      const o = screen.orientation;
+      if (o && o.lock) o.lock(o.type).catch(() => {});
+    } catch { /* not supported here */ }
+  }
+
+  function unlockRotation() {
+    try {
+      if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock();
+    } catch { /* not supported here */ }
+  }
 
   // ---- loop and drawing ---------------------------------------------------------
 
@@ -172,11 +331,12 @@ const BlocksGame = (() => {
     lastT = t;
     while (acc >= STEP_MS) {
       // keep the grab point on the block as it rotates
-      for (const c of drags.values()) c.pointB = Matter.Vector.rotate(c.localPoint, c.bodyB.angle);
+      for (const list of drags.values()) for (const c of list) c.pointB = Matter.Vector.rotate(c.localPoint, c.bodyB.angle);
       Engine.update(engine, STEP_MS);
       acc -= STEP_MS;
     }
     for (const b of blocks) b.pop = Math.max(0, b.pop - 0.06);
+    addLidWhenReady();
     draw();
     frame = requestAnimationFrame(loop);
   }
@@ -269,18 +429,24 @@ const BlocksGame = (() => {
     acc = 0;
     frame = requestAnimationFrame(loop);
     window.addEventListener('resize', resize);
+    tilt = { x: 0, y: 1 };
+    window.addEventListener('devicemotion', onMotion);
+    if (settings.blocksTilt) lockRotation();
   }
 
   function stop() {
     running = false;
     cancelAnimationFrame(frame);
     drags.clear();
+    window.removeEventListener('devicemotion', onMotion);
+    unlockRotation();
     if (engine) {
       Events.off(engine);
       Engine.clear(engine);
       engine = null;
     }
     walls = [];
+    lid = null;
     blocks = [];
     window.removeEventListener('resize', resize);
   }
@@ -290,5 +456,36 @@ const BlocksGame = (() => {
     if (running) dropBlocks();
   }
 
-  return { start, stop, reset };
+  // Used by tests to check the tilt and shake handling.
+  const debug = {
+    onMotion,
+    gravity: () => engine && { x: engine.gravity.x, y: engine.gravity.y },
+    speeds: () => blocks.map((b) => b.speed),
+    lidInfo: () => ({ lid: !!lid, highest: Math.round(Math.min(...blocks.map((b) => b.bounds.min.y))) }),
+    blocks: () => blocks.map((b) => ({ x: b.position.x, y: b.position.y, box: b.bounds })),
+    held: () => [...drags.values()].reduce((n, list) => n + list.length, 0),
+    // deepest overlap (in px) between any two blocks being held
+    heldOverlap: () => {
+      const held = [...drags.values()].flat().map((c) => c.bodyB);
+      let deepest = 0;
+      for (let i = 0; i < held.length; i++) {
+        for (const hit of Matter.Query.collides(held[i], held.slice(i + 1))) deepest = Math.max(deepest, hit.depth);
+      }
+      return deepest;
+    },
+  };
+
+  // Turning tilt off in settings puts gravity straight back to "down".
+  function tiltChanged() {
+    if (!running) return;
+    if (settings.blocksTilt) {
+      lockRotation();
+    } else {
+      unlockRotation();
+      tilt = { x: 0, y: 1 };
+      setGravity(0, 1);
+    }
+  }
+
+  return { start, stop, reset, debug, tiltChanged };
 })();

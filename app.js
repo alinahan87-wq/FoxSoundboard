@@ -10,7 +10,7 @@ const DEFAULTS = {
   numbersRestart: false, numbersHint: true,
   scratchSpeak: true, scratchBrush: 'bigger',
   bounceFloaty: false, bounceHum: true,
-  blocksRecolour: true,
+  blocksRecolour: true, blocksTilt: true, blocksShake: true,
   stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'full',
   patternColourSpeed: 'slow',
 };
@@ -358,6 +358,8 @@ const numbersHintInput = document.getElementById('numbers-hint');
 const scratchSpeakInput = document.getElementById('scratch-speak');
 const bounceFloatyInput = document.getElementById('bounce-floaty');
 const blocksRecolourInput = document.getElementById('blocks-recolour');
+const blocksTiltInput = document.getElementById('blocks-tilt');
+const blocksShakeInput = document.getElementById('blocks-shake');
 const stretchShapeInput = document.getElementById('stretch-shape');
 const patternSpeedInput = document.getElementById('pattern-colour-speed');
 const stretchSoundInput = document.getElementById('stretch-sound');
@@ -423,6 +425,15 @@ document.getElementById('stretch-reset').addEventListener('click', () => {
   dialog.close();
   StretchGame.reset();
 });
+blocksTiltInput.addEventListener('change', () => {
+  settings.blocksTilt = blocksTiltInput.checked;
+  saveSettings();
+  BlocksGame.tiltChanged();
+});
+blocksShakeInput.addEventListener('change', () => {
+  settings.blocksShake = blocksShakeInput.checked;
+  saveSettings();
+});
 blocksRecolourInput.addEventListener('change', () => {
   settings.blocksRecolour = blocksRecolourInput.checked;
   saveSettings();
@@ -477,6 +488,8 @@ function openSettings() {
   scratchSpeakInput.checked = settings.scratchSpeak;
   bounceFloatyInput.checked = settings.bounceFloaty;
   blocksRecolourInput.checked = settings.blocksRecolour;
+  blocksTiltInput.checked = settings.blocksTilt;
+  blocksShakeInput.checked = settings.blocksShake;
   stretchShapeInput.value = settings.stretchShape;
   patternSpeedInput.value = settings.patternColourSpeed;
   stretchSoundInput.checked = settings.stretchSound;
