@@ -169,7 +169,7 @@ html, body {
 .gate.holding { opacity: 1; }
 .gate.holding .ring-bg { stroke: var(--line); }
 .gate.holding .ring {
-  transition: stroke-dashoffset 0.6s linear; /* PIN_HOLD_MS */
+  transition: stroke-dashoffset 1s linear; /* PIN_HOLD_MS */
   stroke-dashoffset: 0;
 }
 

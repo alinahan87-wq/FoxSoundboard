@@ -18,7 +18,7 @@ full-screen like a normal app, and it works with no internet.
 - **No accidental exits.** No long-press menus, no zooming, no scrolling. The screen stays awake.
 - **Grown-up gates.** Two faint buttons that need a PIN: ▶ in the top-right corner
   picks the game, and ⚙️ in the bottom-right corner has the settings for the game that's on.
-  Holding either for just over half a second shows a PIN pad, only while it's held; type the PIN
+  Holding either for 1 second shows a PIN pad, only while it's held; type the PIN
   with your other hand. Letting go closes the pad, and each digit only counts for about 2 seconds.
   The PIN starts as 1234; change it in ⚙️ → All games → Change PIN.
 - **Gentle sounds.** The "oops" sound is a soft bwoop, not a harsh buzzer.

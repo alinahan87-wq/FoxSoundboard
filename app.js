@@ -333,7 +333,7 @@ const PIN_LENGTH = 4;
 // to be typed before the first dot fades, so it has to be typed quickly and on
 // purpose; slow or random poking at the keys never adds up to a PIN.
 const PIN_FADE_MS = 2200;
-const PIN_HOLD_MS = 600; // how long a gate is held before the PIN pad appears
+const PIN_HOLD_MS = 1000; // how long a gate is held before the PIN pad appears
 const pinPad = document.getElementById('pin-pad');
 const pinDots = pinPad.querySelectorAll('.pin-dots span');
 let pinHolder = null;  // the finger holding the gate while the pad is open
