@@ -356,7 +356,7 @@ const GROWNUP_PIN = '1234'; // test PIN
 // to be typed before the first dot fades, so it has to be typed quickly and on
 // purpose; slow or random poking at the keys never adds up to a PIN.
 const PIN_FADE_MS = 2200;
-const PIN_HOLD_MS = 1000; // how long ▶ is held before the PIN pad appears
+const PIN_HOLD_MS = 600; // how long ▶ is held before the PIN pad appears
 const gamesGate = document.getElementById('games-gate');
 const pinPad = document.getElementById('pin-pad');
 const pinDots = pinPad.querySelectorAll('.pin-dots span');

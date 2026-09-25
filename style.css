@@ -174,7 +174,7 @@ html, body {
 }
 
 /* ▶ opens its PIN pad after a shorter hold (PIN_HOLD_MS) */
-#games-gate.holding .ring { transition-duration: 1s; }
+#games-gate.holding .ring { transition-duration: 0.6s; }
 
 /* ---------- PIN pad (shown only while ▶ is held) ---------- */
 
