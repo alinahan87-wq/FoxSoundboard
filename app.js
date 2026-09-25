@@ -352,28 +352,48 @@ holdToOpen(document.getElementById('parent-gate'), () => openSettings());
 // ---------------------------------------------------------------------------
 
 const GROWNUP_PIN = '1234'; // test PIN
+// Each digit lights its dot, which fades away over this long. A faded digit no
+// longer counts, so the whole PIN has to be typed quickly and on purpose; slow
+// or random poking at the keys never adds up to a PIN.
+const PIN_FADE_MS = 1200;
 const gamesGate = document.getElementById('games-gate');
 const pinPad = document.getElementById('pin-pad');
 const pinDots = pinPad.querySelectorAll('.pin-dots span');
 let pinHolder = null;  // the finger holding ▶ while the pad is open
-let pinTyped = '';
+let pinTyped = [];     // digits still lit: { digit, at }
+let pinFrame = 0;
 
-function showPinDots() {
-  pinDots.forEach((dot, i) => dot.classList.toggle('filled', i < pinTyped.length));
+// Digits whose dots haven't faded yet.
+function livePin(now = performance.now()) {
+  pinTyped = pinTyped.filter((d) => now - d.at < PIN_FADE_MS);
+  return pinTyped;
+}
+
+// Redraw the dots every frame while the pad is open, so each one fades.
+function drawPinDots() {
+  const now = performance.now();
+  const live = livePin(now);
+  pinDots.forEach((dot, i) => {
+    const d = live[i];
+    dot.style.setProperty('--lit', d ? String(1 - (now - d.at) / PIN_FADE_MS) : '0');
+  });
+  if (!pinPad.hidden) pinFrame = requestAnimationFrame(drawPinDots);
 }
 
 function openPinPad(pointerId) {
   pinHolder = pointerId;
-  pinTyped = '';
-  showPinDots();
+  pinTyped = [];
   pinPad.classList.remove('wrong');
   pinPad.hidden = false;
+  cancelAnimationFrame(pinFrame);
+  drawPinDots();
 }
 
 function closePinPad() {
   pinHolder = null;
-  pinTyped = '';
+  pinTyped = [];
   pinPad.hidden = true;
+  cancelAnimationFrame(pinFrame);
 }
 
 {
@@ -407,21 +427,21 @@ pinPad.addEventListener('pointerdown', (e) => {
   if (!key || pinHolder === null) return;
   const k = key.dataset.key;
   pinPad.classList.remove('wrong');
-  if (k === 'back') pinTyped = pinTyped.slice(0, -1);
-  else if (pinTyped.length < GROWNUP_PIN.length) pinTyped += k;
-  showPinDots();
-  if (pinTyped.length < GROWNUP_PIN.length) return;
-  if (pinTyped === GROWNUP_PIN) {
+  const live = livePin();
+  if (k === 'back') {
+    live.pop();
+    return;
+  }
+  live.push({ digit: k, at: performance.now() });
+  if (live.length < GROWNUP_PIN.length) return;
+  if (live.map((d) => d.digit).join('') === GROWNUP_PIN) {
     closePinPad();
     openGames();
   } else {
-    // wrong: a little shake, then clear
+    // wrong: a little shake, and the dots clear
     void pinPad.offsetWidth;
     pinPad.classList.add('wrong');
-    setTimeout(() => {
-      pinTyped = '';
-      showPinDots();
-    }, 350);
+    pinTyped = [];
   }
 });
 

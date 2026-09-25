@@ -184,8 +184,9 @@ html, body {
   width: min(300px, calc(100vw - 32px));
   padding: 18px;
   border-radius: 24px;
-  background: var(--panel);
-  color: var(--text);
+  /* always dark, whatever the theme, so the white dots stand out */
+  background: #1f2a33;
+  color: #fff;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
   touch-action: none;
   user-select: none;
@@ -199,15 +200,21 @@ html, body {
 }
 
 .pin-dots span {
-  width: 16px;
-  height: 16px;
+  position: relative;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid var(--muted);
+  border: 2px solid rgba(255, 255, 255, 0.45);
 }
 
-.pin-dots span.filled {
-  background: var(--text);
-  border-color: var(--text);
+/* a lit digit: solid white, fading back to clear (opacity is set as it fades) */
+.pin-dots span::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: var(--lit, 0);
 }
 
 #pin-pad.wrong .pin-dots { animation: nope 400ms ease-in-out; }
@@ -221,10 +228,10 @@ html, body {
 .pin-keys button {
   height: 56px;
   border-radius: 14px;
-  border: 2px solid var(--line);
+  border: 2px solid #3a4a56;
   border-bottom-width: 4px;
-  background: var(--panel);
-  color: var(--text);
+  background: #2b3945;
+  color: #fff;
   font: 700 1.4rem system-ui, sans-serif;
   touch-action: none;
 }

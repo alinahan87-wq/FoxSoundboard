@@ -17,7 +17,8 @@ Every game must follow this pattern:
    of the game picker (the `#games` dialog, opened by holding ▶ in the top-right corner; the first
    group is Soundboard and Circuit). Games are only switchable from there, never from the child's screen.
    ▶ also asks for a PIN (test PIN 1234, `GROWNUP_PIN` in `app.js`) on a pad that only exists while
-   ▶ is held down: type it with the other hand; letting go of ▶ closes the pad.
+   ▶ is held down: type it with the other hand; letting go of ▶ closes the pad. Each digit's dot fades
+   over `PIN_FADE_MS` and a faded digit stops counting, so the PIN must be typed quickly and on purpose.
    Keep game content clear of the top-right (▶) and bottom-right (⚙️) corners.
 5. **Circuit:** games take `start({ onDone })`. When `onDone` is set, a win (always ending with the
    `Celebrate` bubbles) calls `onDone()` instead of starting a new round. Add the game to `STEPS` in
