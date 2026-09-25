@@ -316,7 +316,8 @@ function setMode(mode) {
 
 // ---------------------------------------------------------------------------
 // Grown-up gates: hold ▶ (top right) to pick a game, or ⚙️ (bottom right) for
-// the current game's settings. Both need a 2-second hold.
+// the current game's settings. Both need a 2-second hold. ▶ also needs a PIN,
+// typed with the other hand while still holding ▶ (see below).
 // ---------------------------------------------------------------------------
 
 const dialog = document.getElementById('settings');
@@ -342,7 +343,87 @@ function holdToOpen(gate, open) {
 }
 
 holdToOpen(document.getElementById('parent-gate'), () => openSettings());
-holdToOpen(document.getElementById('games-gate'), () => openGames());
+
+// ---------------------------------------------------------------------------
+// ▶ needs two hands: hold it for 2 seconds and a PIN pad appears, but only
+// for as long as ▶ is held. Type the PIN with the other hand; letting go of ▶
+// closes the pad and forgets what was typed. So a tap or a hold alone never
+// gets anywhere, and nothing pops up during play unless ▶ is held.
+// ---------------------------------------------------------------------------
+
+const GROWNUP_PIN = '1234'; // test PIN
+const gamesGate = document.getElementById('games-gate');
+const pinPad = document.getElementById('pin-pad');
+const pinDots = pinPad.querySelectorAll('.pin-dots span');
+let pinHolder = null;  // the finger holding ▶ while the pad is open
+let pinTyped = '';
+
+function showPinDots() {
+  pinDots.forEach((dot, i) => dot.classList.toggle('filled', i < pinTyped.length));
+}
+
+function openPinPad(pointerId) {
+  pinHolder = pointerId;
+  pinTyped = '';
+  showPinDots();
+  pinPad.classList.remove('wrong');
+  pinPad.hidden = false;
+}
+
+function closePinPad() {
+  pinHolder = null;
+  pinTyped = '';
+  pinPad.hidden = true;
+}
+
+{
+  let holdTimer = null;
+  let holdId = null;
+  gamesGate.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (holdId !== null) return;
+    holdId = e.pointerId;
+    // keep this finger's events coming to ▶ even if it drifts a little
+    try { gamesGate.setPointerCapture(e.pointerId); } catch { /* fine without */ }
+    gamesGate.classList.add('holding');
+    holdTimer = setTimeout(() => {
+      gamesGate.classList.remove('holding');
+      openPinPad(e.pointerId);
+    }, HOLD_MS);
+  });
+  const letGo = (e) => {
+    if (e.pointerId !== holdId) return;
+    holdId = null;
+    clearTimeout(holdTimer);
+    gamesGate.classList.remove('holding');
+    if (pinHolder === e.pointerId) closePinPad();
+  };
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) gamesGate.addEventListener(ev, letGo);
+}
+
+pinPad.addEventListener('pointerdown', (e) => {
+  const key = e.target.closest('[data-key]');
+  e.preventDefault();
+  if (!key || pinHolder === null) return;
+  const k = key.dataset.key;
+  pinPad.classList.remove('wrong');
+  if (k === 'back') pinTyped = pinTyped.slice(0, -1);
+  else if (pinTyped.length < GROWNUP_PIN.length) pinTyped += k;
+  showPinDots();
+  if (pinTyped.length < GROWNUP_PIN.length) return;
+  if (pinTyped === GROWNUP_PIN) {
+    closePinPad();
+    openGames();
+  } else {
+    // wrong: a little shake, then clear
+    void pinPad.offsetWidth;
+    pinPad.classList.add('wrong');
+    setTimeout(() => {
+      pinTyped = '';
+      showPinDots();
+    }, 350);
+  }
+});
 
 // ---------------------------------------------------------------------------
 // Settings screen

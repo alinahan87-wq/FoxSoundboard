@@ -173,6 +173,64 @@ html, body {
   stroke-dashoffset: 0;
 }
 
+/* ---------- PIN pad (shown only while ▶ is held) ---------- */
+
+#pin-pad {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+  width: min(300px, calc(100vw - 32px));
+  padding: 18px;
+  border-radius: 24px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  touch-action: none;
+  user-select: none;
+}
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.pin-dots span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--muted);
+}
+
+.pin-dots span.filled {
+  background: var(--text);
+  border-color: var(--text);
+}
+
+#pin-pad.wrong .pin-dots { animation: nope 400ms ease-in-out; }
+
+.pin-keys {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.pin-keys button {
+  height: 56px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  border-bottom-width: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font: 700 1.4rem system-ui, sans-serif;
+  touch-action: none;
+}
+
+.pin-keys button:active { transform: translateY(2px); border-bottom-width: 2px; }
+
 /* ---------- settings dialog ---------- */
 
 dialog {

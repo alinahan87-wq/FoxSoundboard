@@ -43,7 +43,8 @@
   <div id="bubbles" aria-hidden="true"></div>
 
   <!-- Grown-up gates: each must be held down for 2 seconds, so little fingers can't open them by accident.
-       ▶ (top right) picks the game; ⚙️ (bottom right) holds the settings for the current game. -->
+       ▶ (top right) picks the game, and also needs a PIN typed while it's held; ⚙️ (bottom right)
+       holds the settings for the current game. -->
   <button id="games-gate" class="gate" aria-label="Hold to choose a game">
     <svg class="ring-svg" viewBox="0 0 36 36" aria-hidden="true">
       <circle class="ring-bg" cx="18" cy="18" r="16"/>
@@ -61,6 +62,25 @@
     </svg>
     <span aria-hidden="true">⚙️</span>
   </button>
+
+  <!-- PIN pad for ▶: only shown while ▶ is being held down -->
+  <div id="pin-pad" role="group" aria-label="Grown-up PIN" hidden>
+    <div class="pin-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="pin-keys">
+      <button type="button" data-key="1">1</button>
+      <button type="button" data-key="2">2</button>
+      <button type="button" data-key="3">3</button>
+      <button type="button" data-key="4">4</button>
+      <button type="button" data-key="5">5</button>
+      <button type="button" data-key="6">6</button>
+      <button type="button" data-key="7">7</button>
+      <button type="button" data-key="8">8</button>
+      <button type="button" data-key="9">9</button>
+      <span></span>
+      <button type="button" data-key="0">0</button>
+      <button type="button" data-key="back" aria-label="Delete">⌫</button>
+    </div>
+  </div>
 
   <dialog id="games">
     <form method="dialog" class="settings-inner">
