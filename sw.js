@@ -1,6 +1,6 @@
 // Caches the app so it opens instantly and works with no internet.
 // Bump VERSION whenever any of the files below change.
-const VERSION = 'v31';
+const VERSION = 'v32';
 // The tablet app and the phone preview live on the same site, so each copy
 // names its cache after its own address and only ever clears its own caches.
 const PREFIX = `${self.registration.scope}#`;

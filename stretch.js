@@ -22,7 +22,10 @@ const StretchGame = (() => {
   const DAMPING = 0.86;      // how quickly the wobble settles
   const SMOOTH = 0.25;       // keeps neighbouring spokes similar, so the outline stays rubbery
   const SPREAD = 0.3;        // how wide a pulled bump is (radians)
-  const MIN_R = 0.18;        // the outline never gets closer to the centre than this share of its resting size
+  // How close the outline may come to the centre. Just enough that two parts of
+  // the thick outline pushed in from opposite sides meet without overlapping,
+  // so they can squeeze almost together.
+  const minLength = () => thick() * 0.6;
 
   const screen = document.getElementById('stretch-game');
   const canvas = screen.querySelector('canvas');
@@ -190,7 +193,7 @@ const StretchGame = (() => {
         len += (target - len) * pull;
         v[i] *= 1 - pull;
       }
-      const lo = base[i] * MIN_R;
+      const lo = minLength();
       const hi = maxLength(angles[i]);
       if (len < lo) {
         len = lo;
