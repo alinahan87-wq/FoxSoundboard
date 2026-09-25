@@ -16,10 +16,11 @@ full-screen like a normal app, and it works with no internet.
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
 - **No accidental exits.** No long-press menus, no zooming, no scrolling. The screen stays awake.
-- **Grown-up gates.** Two faint buttons that only open when *held*: ▶ in the top-right corner
-  picks the game, and ⚙️ in the bottom-right corner (held for 2 seconds) has the settings for the
-  game that's on. Holding ▶ for just over half a second shows a PIN pad, only while ▶ is held; type the PIN with
-  your other hand. Letting go of ▶ closes the pad, and each digit only counts for about 2 seconds.
+- **Grown-up gates.** Two faint buttons that need a PIN: ▶ in the top-right corner
+  picks the game, and ⚙️ in the bottom-right corner has the settings for the game that's on.
+  Holding either for just over half a second shows a PIN pad, only while it's held; type the PIN
+  with your other hand. Letting go closes the pad, and each digit only counts for about 2 seconds.
+  The PIN starts as 1234; change it in ⚙️ → All games → Change PIN.
 - **Gentle sounds.** The "oops" sound is a soft bwoop, not a harsh buzzer.
 
 ## Putting it on the tablet
@@ -50,7 +51,7 @@ to Duolingo, so they aren't bundled here, but you can load them yourself for per
 2. Open Duolingo and do a lesson (or just a few questions) to trigger the sounds you want.
 3. Stop recording. Trim the video in Gallery (Edit ✂️) to roughly one sound per clip.
    It doesn't have to be exact.
-4. In the soundboard, hold ⚙️ for 2 seconds, tap **Choose file** next to a button, and pick
+4. In the soundboard, hold ⚙️ and type the PIN, tap **Choose file** next to a button, and pick
    the clip. MP3/M4A/WAV and MP4 screen recordings all work, and silence at the start and
    end is trimmed automatically.
 

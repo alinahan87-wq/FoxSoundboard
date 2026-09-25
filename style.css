@@ -169,14 +169,11 @@ html, body {
 .gate.holding { opacity: 1; }
 .gate.holding .ring-bg { stroke: var(--line); }
 .gate.holding .ring {
-  transition: stroke-dashoffset 2s linear;
+  transition: stroke-dashoffset 0.6s linear; /* PIN_HOLD_MS */
   stroke-dashoffset: 0;
 }
 
-/* ▶ opens its PIN pad after a shorter hold (PIN_HOLD_MS) */
-#games-gate.holding .ring { transition-duration: 0.6s; }
-
-/* ---------- PIN pad (shown only while ▶ is held) ---------- */
+/* ---------- PIN pad (shown only while ▶ or ⚙️ is held) ---------- */
 
 #pin-pad {
   position: fixed;
@@ -307,6 +304,20 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
   color: var(--text);
   font: inherit;
 }
+.row input[type="password"] {
+  width: 6.5em;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  letter-spacing: 0.3em;
+}
+#pin-form .hint { margin: 0; font-size: 0.9rem; }
+#pin-form .actions { flex: none; display: flex; gap: 8px; }
+#pin-status:empty { display: none; }
 .row input[type="checkbox"] { width: 26px; height: 26px; accent-color: #58cc02; flex: none; }
 
 .hint { color: var(--muted); line-height: 1.45; margin: 4px 0 12px; }

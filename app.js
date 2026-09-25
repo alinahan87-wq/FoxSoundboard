@@ -13,6 +13,7 @@ const DEFAULTS = {
   blocksRecolour: true, blocksTilt: true, blocksShake: true,
   stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'full',
   patternColourSpeed: 'slow',
+  pin: '1234', // grown-up PIN for ▶ and ⚙️
 };
 
 function loadSettings() {
@@ -28,6 +29,7 @@ function saveSettings() {
 }
 
 const settings = loadSettings();
+if (!/^\d{4}$/.test(settings.pin)) settings.pin = DEFAULTS.pin;
 if (settings.stretchWin === 'nearly') settings.stretchWin = 'full'; // renamed setting
 
 // ---------------------------------------------------------------------------
@@ -316,51 +318,26 @@ function setMode(mode) {
 
 // ---------------------------------------------------------------------------
 // Grown-up gates: hold ▶ (top right) to pick a game, or ⚙️ (bottom right) for
-// the current game's settings. Both need a 2-second hold. ▶ also needs a PIN,
-// typed with the other hand while still holding ▶ (see below).
+// the current game's settings. Both need two hands: hold the gate and a PIN
+// pad appears, but only for as long as it's held. Type the PIN with the other
+// hand; letting go closes the pad and forgets what was typed. So a tap or a
+// hold alone never gets anywhere, and nothing pops up during play unless a
+// gate is held.
 // ---------------------------------------------------------------------------
 
 const dialog = document.getElementById('settings');
 const gamesDialog = document.getElementById('games');
-const HOLD_MS = 2000;
 
-function holdToOpen(gate, open) {
-  let holdTimer = null;
-  gate.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    gate.classList.add('holding');
-    holdTimer = setTimeout(() => {
-      gate.classList.remove('holding');
-      open();
-    }, HOLD_MS);
-  });
-  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) {
-    gate.addEventListener(ev, () => {
-      clearTimeout(holdTimer);
-      gate.classList.remove('holding');
-    });
-  }
-}
-
-holdToOpen(document.getElementById('parent-gate'), () => openSettings());
-
-// ---------------------------------------------------------------------------
-// ▶ needs two hands: hold it for 2 seconds and a PIN pad appears, but only
-// for as long as ▶ is held. Type the PIN with the other hand; letting go of ▶
-// closes the pad and forgets what was typed. So a tap or a hold alone never
-// gets anywhere, and nothing pops up during play unless ▶ is held.
-// ---------------------------------------------------------------------------
-
-const GROWNUP_PIN = '1234'; // test PIN
+const PIN_LENGTH = 4;
 // Each digit lights its dot, which fades away over this long. The whole PIN has
 // to be typed before the first dot fades, so it has to be typed quickly and on
 // purpose; slow or random poking at the keys never adds up to a PIN.
 const PIN_FADE_MS = 2200;
-const PIN_HOLD_MS = 600; // how long ▶ is held before the PIN pad appears
-const gamesGate = document.getElementById('games-gate');
+const PIN_HOLD_MS = 600; // how long a gate is held before the PIN pad appears
 const pinPad = document.getElementById('pin-pad');
 const pinDots = pinPad.querySelectorAll('.pin-dots span');
-let pinHolder = null;  // the finger holding ▶ while the pad is open
+let pinHolder = null;  // the finger holding the gate while the pad is open
+let pinOpen = null;    // what the held gate opens once the PIN is right
 let pinTyped = [];     // this attempt's digits, one per dot, in order: { digit, at }
 let pinFrame = 0;
 
@@ -382,8 +359,9 @@ function drawPinDots() {
   if (!pinPad.hidden) pinFrame = requestAnimationFrame(drawPinDots);
 }
 
-function openPinPad(pointerId) {
+function openPinPad(pointerId, open) {
   pinHolder = pointerId;
+  pinOpen = open;
   pinTyped = [];
   pinPad.classList.remove('wrong');
   pinPad.hidden = false;
@@ -393,35 +371,39 @@ function openPinPad(pointerId) {
 
 function closePinPad() {
   pinHolder = null;
+  pinOpen = null;
   pinTyped = [];
   pinPad.hidden = true;
   cancelAnimationFrame(pinFrame);
 }
 
-{
+function pinGate(gate, open) {
   let holdTimer = null;
   let holdId = null;
-  gamesGate.addEventListener('pointerdown', (e) => {
+  gate.addEventListener('pointerdown', (e) => {
     e.preventDefault();
-    if (holdId !== null) return;
+    if (holdId !== null || pinHolder !== null) return;
     holdId = e.pointerId;
-    // keep this finger's events coming to ▶ even if it drifts a little
-    try { gamesGate.setPointerCapture(e.pointerId); } catch { /* fine without */ }
-    gamesGate.classList.add('holding');
+    // keep this finger's events coming to the gate even if it drifts a little
+    try { gate.setPointerCapture(e.pointerId); } catch { /* fine without */ }
+    gate.classList.add('holding');
     holdTimer = setTimeout(() => {
-      gamesGate.classList.remove('holding');
-      openPinPad(e.pointerId);
+      gate.classList.remove('holding');
+      openPinPad(e.pointerId, open);
     }, PIN_HOLD_MS);
   });
   const letGo = (e) => {
     if (e.pointerId !== holdId) return;
     holdId = null;
     clearTimeout(holdTimer);
-    gamesGate.classList.remove('holding');
+    gate.classList.remove('holding');
     if (pinHolder === e.pointerId) closePinPad();
   };
-  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) gamesGate.addEventListener(ev, letGo);
+  for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) gate.addEventListener(ev, letGo);
 }
+
+pinGate(document.getElementById('games-gate'), () => openGames());
+pinGate(document.getElementById('parent-gate'), () => openSettings());
 
 pinPad.addEventListener('pointerdown', (e) => {
   const key = e.target.closest('[data-key]');
@@ -436,10 +418,11 @@ pinPad.addEventListener('pointerdown', (e) => {
     return;
   }
   pinTyped.push({ digit: k, at: now });
-  if (pinTyped.length < GROWNUP_PIN.length) return;
-  if (pinTyped.map((d) => d.digit).join('') === GROWNUP_PIN) {
+  if (pinTyped.length < PIN_LENGTH) return;
+  if (pinTyped.map((d) => d.digit).join('') === settings.pin) {
+    const open = pinOpen;
     closePinPad();
-    openGames();
+    open();
   } else {
     // wrong: a little shake, and the dots clear
     void pinPad.offsetWidth;
@@ -602,6 +585,8 @@ function openSettings() {
   bounceHumInput.checked = settings.bounceHum;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';
+  closePinForm();
+  pinStatus.textContent = '';
   renderSoundList();
   dialog.showModal();
 }
@@ -609,6 +594,59 @@ function openSettings() {
 function openGames() {
   modeInputs.forEach((input) => { input.checked = input.value === settings.mode; });
   gamesDialog.showModal();
+}
+
+// Changing the grown-up PIN (settings → All games). It's typed twice so a
+// slip of the finger can't lock everyone out.
+const pinChange = document.getElementById('pin-change');
+const pinForm = document.getElementById('pin-form');
+const pinNew = document.getElementById('pin-new');
+const pinAgain = document.getElementById('pin-again');
+const pinStatus = document.getElementById('pin-status');
+
+function closePinForm() {
+  pinForm.hidden = true;
+  pinChange.hidden = false;
+  pinNew.value = '';
+  pinAgain.value = '';
+}
+
+function savePin() {
+  const pin = pinNew.value;
+  if (!/^\d{4}$/.test(pin)) {
+    pinStatus.textContent = 'The PIN needs to be 4 numbers.';
+  } else if (pinAgain.value !== pin) {
+    pinStatus.textContent = "The two PINs don't match. Try again.";
+  } else {
+    settings.pin = pin;
+    saveSettings();
+    closePinForm();
+    pinStatus.textContent = 'PIN changed. Use the new one for ▶ and ⚙️ from now on.';
+    return;
+  }
+  pinAgain.value = '';
+  (pinStatus.textContent.includes('4 numbers') ? pinNew : pinAgain).focus();
+}
+
+pinChange.addEventListener('click', () => {
+  pinStatus.textContent = '';
+  pinChange.hidden = true;
+  pinForm.hidden = false;
+  pinNew.focus();
+});
+document.getElementById('pin-cancel').addEventListener('click', () => {
+  closePinForm();
+  pinStatus.textContent = '';
+});
+document.getElementById('pin-save').addEventListener('click', savePin);
+for (const input of [pinNew, pinAgain]) {
+  // digits only, and Enter saves instead of closing the settings
+  input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 4); });
+  input.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    if (input === pinNew) pinAgain.focus(); else savePin();
+  });
 }
 
 function renderSoundList() {

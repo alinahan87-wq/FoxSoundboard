@@ -16,8 +16,8 @@ Every game must follow this pattern:
 4. **Activity card:** add a `.mode-card` radio (`name="mode" value="<name>"`) to the second group
    of the game picker (the `#games` dialog, opened by holding ▶ in the top-right corner; the first
    group is Soundboard and Circuit). Games are only switchable from there, never from the child's screen.
-   ▶ also asks for a PIN (test PIN 1234, `GROWNUP_PIN` in `app.js`) on a pad that only exists while
-   ▶ is held down: type it with the other hand; letting go of ▶ closes the pad. Each digit's dot fades
+   ▶ and ⚙️ both ask for a PIN (default 1234, `settings.pin`, changeable under "All games") on a pad
+   that only exists while the gate is held down: type it with the other hand; letting go closes the pad. Each digit's dot fades
    over `PIN_FADE_MS`, and the whole PIN must be typed before the first dot fades, so it takes intent.
    Keep game content clear of the top-right (▶) and bottom-right (⚙️) corners.
 5. **Circuit:** games take `start({ onDone })`. When `onDone` is set, a win (always ending with the

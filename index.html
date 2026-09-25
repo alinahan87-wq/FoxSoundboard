@@ -42,8 +42,8 @@
   </main>
   <div id="bubbles" aria-hidden="true"></div>
 
-  <!-- Grown-up gates: each must be held down for 2 seconds, so little fingers can't open them by accident.
-       ▶ (top right) picks the game, and also needs a PIN typed while it's held; ⚙️ (bottom right)
+  <!-- Grown-up gates: each must be held down, with the PIN typed on the pad that appears while it's held,
+       so little fingers can't open them by accident. ▶ (top right) picks the game; ⚙️ (bottom right)
        holds the settings for the current game. -->
   <button id="games-gate" class="gate" aria-label="Hold to choose a game">
     <svg class="ring-svg" viewBox="0 0 36 36" aria-hidden="true">
@@ -63,7 +63,7 @@
     <span aria-hidden="true">⚙️</span>
   </button>
 
-  <!-- PIN pad for ▶: only shown while ▶ is being held down -->
+  <!-- PIN pad for ▶ and ⚙️: only shown while one of them is being held down -->
   <div id="pin-pad" role="group" aria-label="Grown-up PIN" hidden>
     <div class="pin-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
     <div class="pin-keys">
@@ -170,6 +170,28 @@
         <span>Volume</span>
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
+      <div class="row">
+        <span>Grown-up PIN (for ▶ and ⚙️)</span>
+        <span class="actions"><button type="button" id="pin-change">Change PIN</button></span>
+      </div>
+      <div id="pin-form" hidden>
+        <label class="row">
+          <span>New PIN (4 numbers)</span>
+          <input id="pin-new" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+        </label>
+        <label class="row">
+          <span>New PIN again</span>
+          <input id="pin-again" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+        </label>
+        <div class="row">
+          <span class="hint">Keep a note of it: if it's forgotten, the only way back in is clearing the app's data, which also resets its settings and sounds.</span>
+          <span class="actions">
+            <button type="button" id="pin-cancel">Cancel</button>
+            <button type="button" id="pin-save">Save</button>
+          </span>
+        </div>
+      </div>
+      <p id="pin-status" class="hint" aria-live="polite"></p>
 
       <section data-mode="pattern">
         <h2>Endless pattern</h2>
