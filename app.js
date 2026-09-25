@@ -352,31 +352,32 @@ holdToOpen(document.getElementById('parent-gate'), () => openSettings());
 // ---------------------------------------------------------------------------
 
 const GROWNUP_PIN = '1234'; // test PIN
-// Each digit lights its dot, which fades away over this long. A faded digit no
-// longer counts, so the whole PIN has to be typed quickly and on purpose; slow
-// or random poking at the keys never adds up to a PIN.
+// Each digit lights its dot, which fades away over this long. The whole PIN has
+// to be typed before the first dot fades, so it has to be typed quickly and on
+// purpose; slow or random poking at the keys never adds up to a PIN.
 const PIN_FADE_MS = 2200;
 const PIN_HOLD_MS = 1000; // how long ▶ is held before the PIN pad appears
 const gamesGate = document.getElementById('games-gate');
 const pinPad = document.getElementById('pin-pad');
 const pinDots = pinPad.querySelectorAll('.pin-dots span');
 let pinHolder = null;  // the finger holding ▶ while the pad is open
-let pinTyped = [];     // digits still lit: { digit, at }
+let pinTyped = [];     // this attempt's digits, one per dot, in order: { digit, at }
 let pinFrame = 0;
 
-// Digits whose dots haven't faded yet.
-function livePin(now = performance.now()) {
-  pinTyped = pinTyped.filter((d) => now - d.at < PIN_FADE_MS);
-  return pinTyped;
+// An attempt only counts while its first dot is still lit. Once that has
+// faded, the attempt is over: its dots carry on fading where they are, and
+// the next tap starts a fresh attempt from the first dot.
+function attemptOver(now = performance.now()) {
+  return pinTyped.length > 0 && now - pinTyped[0].at >= PIN_FADE_MS;
 }
 
-// Redraw the dots every frame while the pad is open, so each one fades.
+// Redraw the dots every frame while the pad is open. Each dot stays in its
+// own place and fades steadily from the moment it was tapped.
 function drawPinDots() {
   const now = performance.now();
-  const live = livePin(now);
   pinDots.forEach((dot, i) => {
-    const d = live[i];
-    dot.style.setProperty('--lit', d ? String(1 - (now - d.at) / PIN_FADE_MS) : '0');
+    const d = pinTyped[i];
+    dot.style.setProperty('--lit', d ? String(Math.max(0, 1 - (now - d.at) / PIN_FADE_MS)) : '0');
   });
   if (!pinPad.hidden) pinFrame = requestAnimationFrame(drawPinDots);
 }
@@ -427,15 +428,16 @@ pinPad.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   if (!key || pinHolder === null) return;
   const k = key.dataset.key;
+  const now = performance.now();
   pinPad.classList.remove('wrong');
-  const live = livePin();
+  if (attemptOver(now)) pinTyped = [];
   if (k === 'back') {
-    live.pop();
+    pinTyped.pop();
     return;
   }
-  live.push({ digit: k, at: performance.now() });
-  if (live.length < GROWNUP_PIN.length) return;
-  if (live.map((d) => d.digit).join('') === GROWNUP_PIN) {
+  pinTyped.push({ digit: k, at: now });
+  if (pinTyped.length < GROWNUP_PIN.length) return;
+  if (pinTyped.map((d) => d.digit).join('') === GROWNUP_PIN) {
     closePinPad();
     openGames();
   } else {
