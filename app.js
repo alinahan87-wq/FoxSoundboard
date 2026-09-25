@@ -413,10 +413,6 @@ pinPad.addEventListener('pointerdown', (e) => {
   const now = performance.now();
   pinPad.classList.remove('wrong');
   if (attemptOver(now)) pinTyped = [];
-  if (k === 'back') {
-    pinTyped.pop();
-    return;
-  }
   pinTyped.push({ digit: k, at: now });
   if (pinTyped.length < PIN_LENGTH) return;
   if (pinTyped.map((d) => d.digit).join('') === settings.pin) {
