@@ -355,7 +355,8 @@ const GROWNUP_PIN = '1234'; // test PIN
 // Each digit lights its dot, which fades away over this long. A faded digit no
 // longer counts, so the whole PIN has to be typed quickly and on purpose; slow
 // or random poking at the keys never adds up to a PIN.
-const PIN_FADE_MS = 1200;
+const PIN_FADE_MS = 2200;
+const PIN_HOLD_MS = 1000; // how long ▶ is held before the PIN pad appears
 const gamesGate = document.getElementById('games-gate');
 const pinPad = document.getElementById('pin-pad');
 const pinDots = pinPad.querySelectorAll('.pin-dots span');
@@ -409,7 +410,7 @@ function closePinPad() {
     holdTimer = setTimeout(() => {
       gamesGate.classList.remove('holding');
       openPinPad(e.pointerId);
-    }, HOLD_MS);
+    }, PIN_HOLD_MS);
   });
   const letGo = (e) => {
     if (e.pointerId !== holdId) return;

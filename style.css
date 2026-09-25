@@ -173,6 +173,9 @@ html, body {
   stroke-dashoffset: 0;
 }
 
+/* ▶ opens its PIN pad after a shorter hold (PIN_HOLD_MS) */
+#games-gate.holding .ring { transition-duration: 1s; }
+
 /* ---------- PIN pad (shown only while ▶ is held) ---------- */
 
 #pin-pad {

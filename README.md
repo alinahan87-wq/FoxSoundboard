@@ -16,10 +16,10 @@ full-screen like a normal app, and it works with no internet.
 - **Mash-proof.** Only one sound plays at a time (or they can overlap; it's a setting).
   A built-in limiter stops piled-up sounds from getting too loud.
 - **No accidental exits.** No long-press menus, no zooming, no scrolling. The screen stays awake.
-- **Grown-up gates.** Two faint buttons that only open when *held* for 2 seconds:
-  ▶ in the top-right corner picks the game, and ⚙️ in the bottom-right corner has the
-  settings for the game that's on. ▶ also needs a PIN: keep holding ▶ and type it on the pad
-  that appears with your other hand. Letting go of ▶ closes the pad.
+- **Grown-up gates.** Two faint buttons that only open when *held*: ▶ in the top-right corner
+  picks the game, and ⚙️ in the bottom-right corner (held for 2 seconds) has the settings for the
+  game that's on. Holding ▶ for 1 second shows a PIN pad, only while ▶ is held; type the PIN with
+  your other hand. Letting go of ▶ closes the pad, and each digit only counts for about 2 seconds.
 - **Gentle sounds.** The "oops" sound is a soft bwoop, not a harsh buzzer.
 
 ## Putting it on the tablet
