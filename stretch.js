@@ -117,6 +117,8 @@ const StretchGame = (() => {
   }
 
   function fitHome() {
+    cx = W / 2;
+    cy = H / 2;
     const poly = polygonFor(shape);
     angles = Array.from({ length: N }, (_, i) => (i / N) * TAU);
     base = angles.map((a) => rayLength(poly, a));
@@ -150,6 +152,11 @@ const StretchGame = (() => {
 
   // ---- physics ------------------------------------------------------------------
 
+  // A finger pushing an edge in doesn't stop at the middle: the pushed-in edge
+  // stays pressed in as deep as it can go, and the far side is pushed away
+  // ahead of the finger, like pressing into dough.
+  const pushGap = () => minLength() + thick() * 1.5;
+
   function step() {
     // where each finger wants the outline to be: a smooth bump that passes
     // through the finger, centred on the finger's direction
@@ -161,17 +168,30 @@ const StretchGame = (() => {
       const fa = Math.atan2(fy, fx);
       const fr = Math.hypot(fx, fy);
       const i0 = Math.round((((fa % TAU) + TAU) % TAU) / TAU * N) % N;
-      let lift = fr - home[i0];
-      // Once the finger has crossed over to the far side of the shape, it only
-      // pushes that side outwards (it doesn't grab and pull it in).
-      if (Math.abs(angDiff(fa, gr.a0)) > Math.PI / 2) lift = Math.max(0, lift);
-      for (let i = 0; i < N; i++) {
-        const d = angDiff(angles[i], fa);
-        const w = Math.exp(-(d * d) / (2 * SPREAD * SPREAD));
-        if (w < 0.01) continue;
-        if (w > weight[i]) {
-          want[i] = home[i] + lift * w;
-          weight[i] = w;
+      // Bumps this finger makes: [direction, target length at that direction].
+      const bumps = [];
+      if (Math.abs(angDiff(fa, gr.a0)) <= Math.PI / 2) {
+        // still on the side it grabbed: the outline passes through the finger
+        bumps.push([fa, fr]);
+      } else {
+        // pushed past the middle: keep the grabbed edge pressed right in...
+        bumps.push([gr.a0, minLength()]);
+        // ...and push the far side away, gently at first, then staying just
+        // ahead of the finger as it gets there
+        const iF = i0;
+        bumps.push([fa, Math.max(home[iF], home[iF] + fr * 0.5, fr + pushGap())]);
+      }
+      for (const [dir, len] of bumps) {
+        const ib = Math.round((((dir % TAU) + TAU) % TAU) / TAU * N) % N;
+        const lift = len - home[ib];
+        for (let i = 0; i < N; i++) {
+          const d = angDiff(angles[i], dir);
+          const w = Math.exp(-(d * d) / (2 * SPREAD * SPREAD));
+          if (w < 0.01) continue;
+          if (w > weight[i]) {
+            want[i] = home[i] + lift * w;
+            weight[i] = w;
+          }
         }
       }
     }
