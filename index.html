@@ -169,28 +169,19 @@
         <span>Volume</span>
         <input id="volume" type="range" min="0" max="1" step="0.05">
       </label>
-      <div class="row">
-        <span>Grown-up PIN (for ▶ and ⚙️)</span>
-        <span class="actions"><button type="button" id="pin-change">Change PIN</button></span>
-      </div>
-      <div id="pin-form" hidden>
-        <label class="row">
-          <span>New PIN (4 numbers)</span>
-          <input id="pin-new" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
-        </label>
-        <label class="row">
-          <span>New PIN again</span>
-          <input id="pin-again" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
-        </label>
-        <div class="row">
-          <span class="hint">Keep a note of it: if it's forgotten, the only way back in is clearing the app's data, which also resets its settings and sounds.</span>
-          <span class="actions">
-            <button type="button" id="pin-cancel">Cancel</button>
-            <button type="button" id="pin-save">Save</button>
-          </span>
-        </div>
-      </div>
-      <p id="pin-status" class="hint" aria-live="polite"></p>
+      <p class="hint pin-hint">Any of these PINs unlocks ▶ and ⚙️. Each is 4 numbers; tap one to change it.</p>
+      <label class="row">
+        <span>PIN 1</span>
+        <input class="pin-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="PIN 1">
+      </label>
+      <label class="row">
+        <span>PIN 2</span>
+        <input class="pin-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="PIN 2">
+      </label>
+      <label class="row">
+        <span>PIN 3</span>
+        <input class="pin-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" aria-label="PIN 3">
+      </label>
 
       <section data-mode="pattern">
         <h2>Endless pattern</h2>

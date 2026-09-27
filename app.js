@@ -13,7 +13,7 @@ const DEFAULTS = {
   blocksRecolour: true, blocksTilt: true, blocksShake: true,
   stretchShape: 'random', stretchSound: true, stretchColour: true, stretchWin: 'full',
   patternColourSpeed: 'slow',
-  pin: '1234', // grown-up PIN for ▶ and ⚙️
+  pins: ['1975', '1234', '5678'], // grown-up PINs for ▶ and ⚙️; any of them works
 };
 
 function loadSettings() {
@@ -29,7 +29,9 @@ function saveSettings() {
 }
 
 const settings = loadSettings();
-if (!/^\d{4}$/.test(settings.pin)) settings.pin = DEFAULTS.pin;
+delete settings.pin; // replaced by pins
+if (!Array.isArray(settings.pins)) settings.pins = [];
+settings.pins = DEFAULTS.pins.map((d, i) => (/^\d{4}$/.test(settings.pins[i]) ? settings.pins[i] : d));
 if (settings.stretchWin === 'nearly') settings.stretchWin = 'full'; // renamed setting
 
 // ---------------------------------------------------------------------------
@@ -415,7 +417,7 @@ pinPad.addEventListener('pointerdown', (e) => {
   if (attemptOver(now)) pinTyped = [];
   pinTyped.push({ digit: k, at: now });
   if (pinTyped.length < PIN_LENGTH) return;
-  if (pinTyped.map((d) => d.digit).join('') === settings.pin) {
+  if (settings.pins.includes(pinTyped.map((d) => d.digit).join(''))) {
     const open = pinOpen;
     closePinPad();
     open();
@@ -581,8 +583,7 @@ function openSettings() {
   bounceHumInput.checked = settings.bounceHum;
   scratchBrushInput.value = settings.scratchBrush;
   voiceStatus.textContent = '';
-  closePinForm();
-  pinStatus.textContent = '';
+  pinInputs.forEach((input, i) => { input.value = settings.pins[i]; });
   renderSoundList();
   dialog.showModal();
 }
@@ -592,58 +593,26 @@ function openGames() {
   gamesDialog.showModal();
 }
 
-// Changing the grown-up PIN (settings → All games). It's typed twice so a
-// slip of the finger can't lock everyone out.
-const pinChange = document.getElementById('pin-change');
-const pinForm = document.getElementById('pin-form');
-const pinNew = document.getElementById('pin-new');
-const pinAgain = document.getElementById('pin-again');
-const pinStatus = document.getElementById('pin-status');
-
-function closePinForm() {
-  pinForm.hidden = true;
-  pinChange.hidden = false;
-  pinNew.value = '';
-  pinAgain.value = '';
-}
-
-function savePin() {
-  const pin = pinNew.value;
-  if (!/^\d{4}$/.test(pin)) {
-    pinStatus.textContent = 'The PIN needs to be 4 numbers.';
-  } else if (pinAgain.value !== pin) {
-    pinStatus.textContent = "The two PINs don't match. Try again.";
-  } else {
-    settings.pin = pin;
-    saveSettings();
-    closePinForm();
-    pinStatus.textContent = 'PIN changed. Use the new one for ▶ and ⚙️ from now on.';
-    return;
-  }
-  pinAgain.value = '';
-  (pinStatus.textContent.includes('4 numbers') ? pinNew : pinAgain).focus();
-}
-
-pinChange.addEventListener('click', () => {
-  pinStatus.textContent = '';
-  pinChange.hidden = true;
-  pinForm.hidden = false;
-  pinNew.focus();
-});
-document.getElementById('pin-cancel').addEventListener('click', () => {
-  closePinForm();
-  pinStatus.textContent = '';
-});
-document.getElementById('pin-save').addEventListener('click', savePin);
-for (const input of [pinNew, pinAgain]) {
-  // digits only, and Enter saves instead of closing the settings
-  input.addEventListener('input', () => { input.value = input.value.replace(/\D/g, '').slice(0, 4); });
+// The grown-up PINs (settings → All games): three of them, so each grown-up
+// can have one they'll remember. They're shown as plain numbers and saved as
+// soon as all 4 digits are in; an unfinished one goes back to what it was.
+const pinInputs = document.querySelectorAll('.pin-input');
+pinInputs.forEach((input, i) => {
+  input.addEventListener('input', () => {
+    input.value = input.value.replace(/\D/g, '').slice(0, 4);
+    if (input.value.length === 4) {
+      settings.pins[i] = input.value;
+      saveSettings();
+    }
+  });
+  input.addEventListener('blur', () => { input.value = settings.pins[i]; });
+  // Enter finishes the PIN instead of closing the settings
   input.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     e.preventDefault();
-    if (input === pinNew) pinAgain.focus(); else savePin();
+    input.blur();
   });
-}
+});
 
 function renderSoundList() {
   soundList.innerHTML = '';

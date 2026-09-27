@@ -20,7 +20,8 @@ full-screen like a normal app, and it works with no internet.
   picks the game, and ⚙️ in the bottom-right corner has the settings for the game that's on.
   Holding either for 1 second shows a PIN pad, only while it's held; type the PIN
   with your other hand. Letting go closes the pad, and each digit only counts for about 2 seconds.
-  The PIN starts as 1234; change it in ⚙️ → All games → Change PIN.
+  There are three PINs (1975, 1234 and 5678 to start with), so each grown-up can have their own;
+  any of them works. See and change them in ⚙️ → All games.
 - **Gentle sounds.** The "oops" sound is a soft bwoop, not a harsh buzzer.
 
 ## Putting it on the tablet
