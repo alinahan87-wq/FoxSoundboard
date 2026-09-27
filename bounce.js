@@ -4,7 +4,9 @@
 
 // Bouncy ball: a smiley ball bounces around the screen. Tap anywhere and it
 // hops to that spot and bounces from there. Hold a finger down to charge it
-// up: it grows, and shakes when it's full. Let go and it launches; the more
+// up: it grows, and shakes when it's full. While held, the ball sits just above
+// the finger (below it, near the top edge) so the finger never hides it growing.
+// Let go and it launches; the more
 // charge, the harder it bounces, with stars, colours and rings on big hits,
 // until the energy wears off and it settles down again. No goal, just play.
 
@@ -32,7 +34,7 @@ const BounceGame = (() => {
     squashAxis: 'y',
     trail: [],
   };
-  let hold = null;  // { id, start } while a finger is charging the ball
+  let hold = null;  // { id, start, p } while a finger is charging the ball; p is where the finger is
   let particles = [];
   let rings = [];
   let flash = null; // { colour, alpha }
@@ -104,9 +106,17 @@ const BounceGame = (() => {
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
-  function moveBallTo(p) {
+  // Put the held ball clear of the finger: its glow's edge sits a finger's
+  // width above the touch point, so the gap grows along with the ball. If
+  // there's no room above for a fully grown ball, it sits below instead.
+  function placeHeldBall() {
+    const p = hold.p;
+    const gap = Math.max(40, baseR() * 0.8);
+    const offset = ball.r * 1.5 + gap;
+    const room = baseR() * 1.75 * 2.5 + gap; // enough for the biggest ball above
+    const y = p.y >= room ? p.y - offset : p.y + offset;
     ball.x = Math.min(Math.max(p.x, ball.r), W - ball.r);
-    ball.y = Math.min(Math.max(p.y, ball.r), H - ball.r);
+    ball.y = Math.min(Math.max(y, ball.r), H - ball.r);
     ball.vx = 0;
     ball.vy = 0;
     ball.trail = [];
@@ -116,14 +126,14 @@ const BounceGame = (() => {
     e.preventDefault();
     if (hold) return; // one finger at a time drives the ball
     canvas.setPointerCapture(e.pointerId);
-    hold = { id: e.pointerId, start: performance.now() };
-    moveBallTo(point(e));
+    hold = { id: e.pointerId, start: performance.now(), p: point(e) };
+    placeHeldBall();
     EFFECTS.pop(audio(), master);
     startHum();
   });
 
   canvas.addEventListener('pointermove', (e) => {
-    if (hold && e.pointerId === hold.id) moveBallTo(point(e));
+    if (hold && e.pointerId === hold.id) hold.p = point(e);
   });
 
   function release(e) {
@@ -155,6 +165,7 @@ const BounceGame = (() => {
     const target = baseR() * (1 + 0.75 * (hold ? c : ball.energy));
     ball.r += (target - ball.r) * Math.min(1, dt * (hold ? 10 : 2.5));
     ball.squash = Math.max(0, ball.squash - dt * 5);
+    if (hold) placeHeldBall(); // follows the finger, and keeps clear as it grows
 
     if (!hold) {
       ball.energy = Math.max(0, ball.energy - dt * 0.12);
