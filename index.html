@@ -28,6 +28,13 @@
     </div>
     <div class="animal-name" aria-live="polite"></div>
   </main>
+  <main id="dino-game" data-mode="dinos" aria-label="Dino scratch" hidden>
+    <div class="scratch-card">
+      <span class="animal" aria-hidden="true"></span>
+      <canvas aria-label="Scratch here"></canvas>
+    </div>
+    <div class="animal-name" aria-live="polite"></div>
+  </main>
   <main id="bounce-game" data-mode="bounce" aria-label="Bouncy ball" hidden>
     <canvas aria-label="Tap or hold to bounce the ball"></canvas>
   </main>
@@ -127,6 +134,12 @@
           <span class="mode-art" aria-hidden="true">🐾</span>
           <b>Scratch &amp; reveal</b>
           <small>Scratch away the pattern to find an animal</small>
+        </label>
+        <label class="mode-card">
+          <input type="radio" name="mode" value="dinos">
+          <span class="mode-art" aria-hidden="true">🦖</span>
+          <b>Dino scratch</b>
+          <small>Scratch away the pattern to find a dinosaur</small>
         </label>
         <label class="mode-card">
           <input type="radio" name="mode" value="bounce">
@@ -266,10 +279,10 @@
         </label>
       </section>
 
-      <section data-mode="scratch circuit">
-        <h2>Scratch &amp; reveal</h2>
+      <section data-mode="scratch dinos circuit">
+        <h2>Scratch &amp; reveal and Dino scratch</h2>
         <label class="row">
-          <span>Say the animal's name out loud</span>
+          <span>Say the animal's or dinosaur's name out loud</span>
           <input id="scratch-speak" type="checkbox">
         </label>
         <div class="row">
@@ -339,6 +352,7 @@
   <script src="fox.js"></script>
   <script src="numbers.js"></script>
   <script src="scratch.js"></script>
+  <script src="dinos.js"></script>
   <script src="bounce.js"></script>
   <script src="vendor/matter.min.js"></script>
   <script src="blocks.js"></script>

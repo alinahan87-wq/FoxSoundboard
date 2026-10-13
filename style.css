@@ -557,7 +557,8 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
 
 /* ---------- scratch & reveal ---------- */
 
-#scratch-game {
+#scratch-game,
+#dino-game {
   position: fixed;
   inset: 0;
   display: flex;
@@ -596,6 +597,15 @@ h3 { font-size: 1rem; margin: 20px 0 4px; }
   line-height: 1;
   pointer-events: none;
 }
+
+.animal svg {
+  display: block;
+  width: calc(var(--side) * 0.84);
+  height: calc(var(--side) * 0.84);
+}
+
+/* dinosaur names are long (Parasaurolophus), so they get a smaller size to fit */
+#dino-game .animal-name { font-size: min(10vh, 9vw); }
 
 .animal.happy { animation: happy 900ms ease-in-out 3; }
 

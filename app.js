@@ -1,4 +1,4 @@
-/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, BounceGame, BlocksGame, StretchGame, PatternGame, Circuit */
+/* global BUTTONS, SYNTHS, EFFECTS, ColourGame, FoxGame, NumbersGame, ScratchGame, DinoGame, BounceGame, BlocksGame, StretchGame, PatternGame, Circuit */
 'use strict';
 
 // ---------------------------------------------------------------------------
@@ -299,6 +299,7 @@ const GAMES = {
   fox: FoxGame,
   numbers: NumbersGame,
   scratch: ScratchGame,
+  dinos: DinoGame,
   bounce: BounceGame,
   blocks: BlocksGame,
   stretch: StretchGame,

@@ -1,7 +1,7 @@
 # Fox's Games
 
 A toddler games app (PWA) for an Android tablet, for an autistic toddler. Plain HTML/CSS/JS with no
-build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `numbers.js`, `scratch.js`, `bounce.js`, `blocks.js`, `stretch.js`, `pattern.js`, `circuit.js`, `app.js`, `sw.js`.
+build step: `index.html`, `style.css`, `sounds.js`, `celebrate.js`, `colour.js`, `fox.js`, `numbers.js`, `scratch.js`, `dinos.js`, `bounce.js`, `blocks.js`, `stretch.js`, `pattern.js`, `circuit.js`, `app.js`, `sw.js`.
 Third-party code lives in `vendor/` (Matter.js 0.19.0 physics, MIT), kept locally so the app works offline.
 
 ## Adding a new game (mode)

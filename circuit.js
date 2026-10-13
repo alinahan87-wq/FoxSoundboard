@@ -1,4 +1,4 @@
-/* global ColourGame, FoxGame, NumbersGame, ScratchGame */
+/* global ColourGame, FoxGame, NumbersGame, ScratchGame, DinoGame */
 /* exported Circuit */
 'use strict';
 
@@ -12,6 +12,7 @@ const Circuit = (() => {
     ['fox', FoxGame],
     ['numbers', NumbersGame],
     ['scratch', ScratchGame],
+    ['dinos', DinoGame],
   ];
   let step = 0;
   let active = false;

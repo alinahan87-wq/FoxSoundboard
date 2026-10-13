@@ -1,26 +1,30 @@
 /* global audio, master, EFFECTS, SYNTHS, PALETTE, settings, say, Celebrate */
-/* exported ScratchGame */
+/* exported ScratchGame, makeScratchGame */
 'use strict';
 
 // Scratch & reveal: a cartoon animal hides under a colourful pattern. Tapping
 // or dragging a finger scratches the pattern away. Once it's (nearly) all
 // gone, the animal does a happy dance and its name appears and is spoken.
 // Then a new animal hides under a new pattern.
+//
+// makeScratchGame(screen, things) builds a scratch game on a screen laid out
+// like #scratch-game, revealing one of `things` each round: [art, name] pairs
+// where art is an emoji or an <svg> picture (dinos.js uses that).
 
-const ScratchGame = (() => {
-  const ANIMALS = [
-    ['🐶', 'Dog'], ['🐱', 'Cat'], ['🦊', 'Fox'], ['🐸', 'Frog'], ['🐷', 'Pig'],
-    ['🐮', 'Cow'], ['🦁', 'Lion'], ['🐵', 'Monkey'], ['🐼', 'Panda'], ['🐰', 'Bunny'],
-    ['🐯', 'Tiger'], ['🐨', 'Koala'], ['🐧', 'Penguin'], ['🐘', 'Elephant'], ['🦉', 'Owl'],
-    ['🐻', 'Bear'], ['🐤', 'Chick'], ['🦄', 'Unicorn'], ['🐭', 'Mouse'], ['🐢', 'Turtle'],
-    ['🐙', 'Octopus'], ['🐳', 'Whale'],
-  ];
+const ANIMALS = [
+  ['🐶', 'Dog'], ['🐱', 'Cat'], ['🦊', 'Fox'], ['🐸', 'Frog'], ['🐷', 'Pig'],
+  ['🐮', 'Cow'], ['🦁', 'Lion'], ['🐵', 'Monkey'], ['🐼', 'Panda'], ['🐰', 'Bunny'],
+  ['🐯', 'Tiger'], ['🐨', 'Koala'], ['🐧', 'Penguin'], ['🐘', 'Elephant'], ['🦉', 'Owl'],
+  ['🐻', 'Bear'], ['🐤', 'Chick'], ['🦄', 'Unicorn'], ['🐭', 'Mouse'], ['🐢', 'Turtle'],
+  ['🐙', 'Octopus'], ['🐳', 'Whale'],
+];
+
+function makeScratchGame(screen, things) {
   const BRUSH = { big: 0.07, bigger: 0.1, huge: 0.14 }; // brush radius, as a share of the card
   const GRID = 20;          // the card is tracked as a 20×20 grid to see how much is cleared
   const DONE_AT = 0.9;      // reveal once 90% is scratched away; tiny corners don't count
   const ROUND_MS = 4800;
 
-  const screen = document.getElementById('scratch-game');
   const card = screen.querySelector('.scratch-card');
   const animalEl = screen.querySelector('.animal');
   const nameEl = screen.querySelector('.animal-name');
@@ -220,11 +224,11 @@ const ScratchGame = (() => {
     done = false;
     fingers.clear();
     let pick;
-    do pick = rand(ANIMALS.length);
+    do pick = rand(things.length);
     while (pick === current);
     current = pick;
 
-    const [emoji, name] = ANIMALS[pick];
+    const [art, name] = things[pick];
     // cover first, so the new animal is never seen before it's scratched
     sizeCanvas();
     drawCover();
@@ -233,7 +237,8 @@ const ScratchGame = (() => {
     canvas.getAnimations().forEach((a) => a.cancel());
     canvas.style.opacity = '1';
 
-    animalEl.textContent = emoji;
+    if (art.startsWith('<svg')) animalEl.innerHTML = art;
+    else animalEl.textContent = art;
     animalEl.classList.remove('happy');
     card.style.setProperty('--bg', `color-mix(in srgb, ${PALETTE[rand(PALETTE.length)].hex} 28%, #fff)`);
     nameEl.textContent = name;
@@ -257,7 +262,7 @@ const ScratchGame = (() => {
     }, 300);
     later(() => {
       nameEl.classList.add('show');
-      speak(ANIMALS[current][1]);
+      speak(things[current][1]);
     }, 1100);
     if (!onDone) later(newRound, ROUND_MS);
   }
@@ -289,4 +294,6 @@ const ScratchGame = (() => {
   }
 
   return { start, stop };
-})();
+}
+
+const ScratchGame = makeScratchGame(document.getElementById('scratch-game'), ANIMALS);

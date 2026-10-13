@@ -1,6 +1,6 @@
 // Caches the app so it opens instantly and works with no internet.
 // Bump VERSION whenever any of the files below change.
-const VERSION = 'v43';
+const VERSION = 'v44';
 // The tablet app and the phone preview live on the same site, so each copy
 // names its cache after its own address and only ever clears its own caches.
 const PREFIX = `${self.registration.scope}#`;
@@ -15,6 +15,7 @@ const FILES = [
   'fox.js',
   'numbers.js',
   'scratch.js',
+  'dinos.js',
   'bounce.js',
   'vendor/matter.min.js',
   'blocks.js',
